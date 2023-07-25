@@ -8,8 +8,9 @@ namespace Pacman {
 	struct QuadVertex
 	{
 		glm::vec3 Position;
+		glm::vec4 Color;
 
-		QuadVertex(glm::vec3 position) : Position(position) {}
+		QuadVertex(glm::vec3 position, glm::vec4 color) : Position(position), Color(color) {}
 	};
 
 	struct RendererData
@@ -39,22 +40,37 @@ namespace Pacman {
 
 	void Renderer::InitShader()
 	{
+		int  success;
+		char infoLog[512];
+
 		const char* vertexShaderSource = "#version 330 core\n"
 			"layout (location = 0) in vec3 aPos;\n"
+			"layout (location = 1) in vec4 aColor;\n"
+			"out vec4 ourColor;\n"
 			"void main()\n"
 			"{\n"
 			"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+			"   ourColor = aColor; \n"
 			"}\0";
 
 		uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
 		glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
 		glCompileShader(vertexShader);
 
+		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); 
+		if (!success)
+		{
+			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+		}
+
+
 		const char* fragmentShaderSource = "#version 330 core\n"
 			"out vec4 FragColor; \n"
+			"in vec4 ourColor; \n"
 			"void main()\n"
 			"{\n"
-			"FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+			"FragColor = ourColor;\n"
 			"}\n";
 
 		unsigned int fragmentShader;
@@ -62,12 +78,18 @@ namespace Pacman {
 		glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
 		glCompileShader(fragmentShader);
 
+		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+		}
+
 		s_Data.Shader = glCreateProgram();
 		glAttachShader(s_Data.Shader, vertexShader);
 		glAttachShader(s_Data.Shader, fragmentShader);
 		glLinkProgram(s_Data.Shader);
 
-		GLint success;
 		glGetProgramiv(s_Data.Shader, GL_LINK_STATUS, &success);
 		if (!success)
 		{
@@ -88,8 +110,12 @@ namespace Pacman {
 
 		glBufferData(GL_ARRAY_BUFFER, sizeof(QuadVertex) * 4, nullptr, GL_DYNAMIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+		int stride = sizeof(QuadVertex);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)0);
 		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
+		glEnableVertexAttribArray(1);
 	}
 
 	void Renderer::InitIndexBuffer()
@@ -110,13 +136,13 @@ namespace Pacman {
 		glBindVertexArray(s_Data.VAO);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position)
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec4& color)
 	{
 		QuadVertex vertices[] = {
-			{position + s_Data.QuadVertexPositions[0]},
-			{position + s_Data.QuadVertexPositions[1]},
-			{position + s_Data.QuadVertexPositions[2]},
-			{position + s_Data.QuadVertexPositions[3]},
+			{position + s_Data.QuadVertexPositions[0], color},
+			{position + s_Data.QuadVertexPositions[1], color},
+			{position + s_Data.QuadVertexPositions[2], color},
+			{position + s_Data.QuadVertexPositions[3], color},
 		};
 
 

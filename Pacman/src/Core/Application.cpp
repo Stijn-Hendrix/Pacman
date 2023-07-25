@@ -28,6 +28,8 @@ namespace Pacman {
 
 		while (m_Running)
 		{
+			m_Window->Clear();
+
 			float time = (float)glfwGetTime();
 			float timestep = time - m_FrameLastTime;
 			m_FrameLastTime = time;

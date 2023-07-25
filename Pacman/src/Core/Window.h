@@ -23,6 +23,7 @@ namespace Pacman {
 		uint32_t GetHeight() const { return m_Height; }
 
 		void Init(const std::string& name, uint32_t width, uint32_t heigth);
+		void Clear();
 		void Update();
 		void Shutdown();
 

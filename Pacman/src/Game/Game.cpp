@@ -14,12 +14,11 @@ namespace Pacman {
 		Renderer::Init();
 	}
 
-	glm::vec3 test = { 0,0,0 };
 
 	void Game::OnUpdate(float ts)
 	{
-		test.x += ts * 0.01f;
-		Renderer::DrawQuad(test);
+		Renderer::DrawQuad(glm::vec3(0.2f,0,0), {0,1,0,1});
+		Renderer::DrawQuad(glm::vec3(0), {1,0,0,0.8f});
 
 	}
 

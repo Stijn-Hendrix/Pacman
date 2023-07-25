@@ -61,6 +61,15 @@ namespace Pacman {
 		});
 
 		SetVsync(true);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
+	void Window::Clear()
+	{
+		glClearColor(0.1f, 0.1f, 0.1f, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void Window::SetVsync(bool value)

@@ -9,7 +9,7 @@ namespace Pacman {
 	public:
 
 		static void Init();
-		static void DrawQuad(const glm::vec3& position);
+		static void DrawQuad(const glm::vec3& position, const glm::vec4& color);
 		static void ShutDown();
 
 	private:
