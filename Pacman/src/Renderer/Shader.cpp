@@ -4,6 +4,7 @@
 #include "Core/Base.h"
 
 #include <glad/glad.h>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Pacman {
 
@@ -103,15 +104,21 @@ namespace Pacman {
 		return m_UniformCache[name];
 	}
 
-	void Shader::SetUnifromFloat1(const std::string& name, float value)
+	void Shader::SetFloat1(const std::string& name, float value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1f(location, value);
 	}
 	
-	void Shader::SetUniform1i(const std::string& name, int value)
+	void Shader::SetInt1(const std::string& name, int value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1i(location, value);
+	}
+
+	void Shader::SetMat4(const std::string& name, const glm::mat4& value)
+	{
+		GLint location = GetUniformLocation(name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 	}
 }

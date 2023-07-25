@@ -1,9 +1,6 @@
 #include "ppch.h"
 #include "Renderer.h"
 
-#include "Shader.h"
-#include "Texture.h"
-
 #include <glad/glad.h>
 
 namespace Pacman {
@@ -30,6 +27,14 @@ namespace Pacman {
 	};
 
 	static RendererData s_Data;
+
+	void Renderer::BeginScene(const Camera& camera)
+	{
+		glm::mat4 viewProj = camera.GetViewProjection();
+
+		s_Data.Shader->Bind();
+		s_Data.Shader->SetMat4("u_ViewProjection", viewProj);
+	}
 
 	void Renderer::Init()
 	{

@@ -3,12 +3,16 @@
 #include <glm/glm.hpp>
 
 #include "Texture.h"
+#include "Shader.h"
+#include "Camera.h"
 
 namespace Pacman {
 
 	class Renderer
 	{
 	public:
+
+		static void BeginScene(const Camera& camera);
 
 		static void Init();
 		static void DrawQuad(const glm::vec3& position, const glm::vec4& color = glm::vec4(1,1,1,1));
