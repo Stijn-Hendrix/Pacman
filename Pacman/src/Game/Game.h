@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Core/Base.h"
-#include "Renderer/Texture.h"
+
 #include "Renderer/Camera.h"
+#include "Player.h"
 
 namespace Pacman {
 
@@ -18,9 +19,7 @@ namespace Pacman {
 		void OnEnd();
 
 	private:
-		std::shared_ptr<Texture> m_PacmanTexture;
-		std::shared_ptr<Texture> m_GhostTexture;
-
+		Player m_Player;
 		Camera m_Camera;
 	};
 

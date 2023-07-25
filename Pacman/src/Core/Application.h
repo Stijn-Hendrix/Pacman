@@ -13,6 +13,9 @@ namespace Pacman {
 		Application(const std::string& name = "Pacman", uint32_t width = 800, uint32_t height = 800);
 		void Run();
 
+		static inline Application& Get() { return *s_Instance; }
+		inline Window& GetWindow() { return *m_Window; }
+
 	private:
 		std::unique_ptr<Window> m_Window;
 		std::unique_ptr<Game> m_Game;
