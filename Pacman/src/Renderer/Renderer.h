@@ -16,7 +16,6 @@ namespace Pacman {
 		static void InitVertexArray();
 		static void InitVertexBuffer();
 		static void InitIndexBuffer();
-		static void InitShader();
 	};
 
 

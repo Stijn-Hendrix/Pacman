@@ -1,6 +1,8 @@
 #include "ppch.h"
 #include "Renderer.h"
 
+#include "Shader.h"
+
 #include <glad/glad.h>
 
 namespace Pacman {
@@ -18,7 +20,7 @@ namespace Pacman {
 		uint32_t VBO;
 		uint32_t VAO;
 		uint32_t IBO;
-		uint32_t Shader;
+		std::shared_ptr<Shader> Shader;
 
 		glm::vec3 QuadVertexPositions[4];
 	};
@@ -35,72 +37,8 @@ namespace Pacman {
 		InitVertexArray();
 		InitVertexBuffer();
 		InitIndexBuffer();
-		InitShader();
-	}
 
-	void Renderer::InitShader()
-	{
-		int  success;
-		char infoLog[512];
-
-		const char* vertexShaderSource = "#version 330 core\n"
-			"layout (location = 0) in vec3 aPos;\n"
-			"layout (location = 1) in vec4 aColor;\n"
-			"out vec4 ourColor;\n"
-			"void main()\n"
-			"{\n"
-			"   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-			"   ourColor = aColor; \n"
-			"}\0";
-
-		uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-		glCompileShader(vertexShader);
-
-		glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success); 
-		if (!success)
-		{
-			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-
-
-		const char* fragmentShaderSource = "#version 330 core\n"
-			"out vec4 FragColor; \n"
-			"in vec4 ourColor; \n"
-			"void main()\n"
-			"{\n"
-			"FragColor = ourColor;\n"
-			"}\n";
-
-		unsigned int fragmentShader;
-		fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-		glCompileShader(fragmentShader);
-
-		glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-		if (!success)
-		{
-			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-
-		s_Data.Shader = glCreateProgram();
-		glAttachShader(s_Data.Shader, vertexShader);
-		glAttachShader(s_Data.Shader, fragmentShader);
-		glLinkProgram(s_Data.Shader);
-
-		glGetProgramiv(s_Data.Shader, GL_LINK_STATUS, &success);
-		if (!success)
-		{
-			GLchar* infoLog;
-			glGetProgramInfoLog(s_Data.Shader, 512, NULL, infoLog);
-			std::cout << infoLog << std::endl;
-		}
-
-		glUseProgram(s_Data.Shader);
-		glDeleteShader(vertexShader);
-		glDeleteShader(fragmentShader);
+		s_Data.Shader = Shader::Create("assets/shaders/vert.glsl", "assets/shaders/frag.glsl");
 	}
 
 	void Renderer::InitVertexBuffer()
@@ -146,7 +84,7 @@ namespace Pacman {
 		};
 
 
-		glUseProgram(s_Data.Shader);
+		s_Data.Shader->Bind();
 		glBindVertexArray(s_Data.VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, s_Data.VBO);
@@ -159,7 +97,6 @@ namespace Pacman {
 	{
 		glDeleteBuffers(1, &s_Data.VBO);
 		glDeleteVertexArrays(1, &s_Data.VAO);
-		glDeleteShader(s_Data.Shader);
 	}
 	
 }

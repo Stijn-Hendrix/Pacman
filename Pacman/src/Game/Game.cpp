@@ -17,9 +17,7 @@ namespace Pacman {
 
 	void Game::OnUpdate(float ts)
 	{
-		Renderer::DrawQuad(glm::vec3(0.2f,0,0), {0,1,0,1});
-		Renderer::DrawQuad(glm::vec3(0), {1,0,0,0.8f});
-
+		Renderer::DrawQuad(glm::vec3(0), {1,1,1,1});
 	}
 
 	void Game::OnEnd()
