@@ -16,6 +16,9 @@ namespace Pacman {
 			return std::make_shared<Texture>(path);
 		}
 
+		uint32_t GetWidth() const { return m_Width; }
+		uint32_t GetHeight() const { return m_Height; }
+
 		void Bind(uint32_t slot = 0);
 
 	private:

@@ -7,8 +7,18 @@
 namespace Pacman {
 
 	Player::Player()
-		: m_PacmanTexture(Texture::Create("assets/textures/pacman.png"))
 	{
+		auto texture = Texture::Create("assets/textures/pacman.png");
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 3, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 4, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }));
+		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 }));
+
+		m_CurrentAnimation = 0;
 	}
 
 	void Player::OnUpdate(float ts)
@@ -18,25 +28,36 @@ namespace Pacman {
 		if (Input::IsKeyPressed(Key::A))
 		{
 			m_Position.x -= ts * moveSpeed;
+			m_Angle = 180;
 		}
 		else if (Input::IsKeyPressed(Key::D))
 		{
 			m_Position.x += ts * moveSpeed;
+			m_Angle = 0;
 		}
-
 		if (Input::IsKeyPressed(Key::S))
 		{
 			m_Position.y -= ts * moveSpeed;
+			m_Angle = -90;
 		}
 		else if (Input::IsKeyPressed(Key::W))
 		{
 			m_Position.y += ts * moveSpeed;
+			m_Angle = 90;
 		}
+
+		UpdateAnimation(ts);
 	}
 
 	void Player::OnDraw()
 	{
-		Renderer::DrawQuad(m_Position, m_PacmanTexture);
+		Renderer::DrawQuadRotated(m_Position, { 1, 1 }, m_Angle, m_PackmanAnimations[m_CurrentAnimation]);
+	}
+
+	void Player::UpdateAnimation(float ts)
+	{
+		m_AnimationStep += ts * 5;
+		m_CurrentAnimation = std::round(std::abs(glm::sin(m_AnimationStep)) * (m_PackmanAnimations.size() - 1));
 	}
 
 }

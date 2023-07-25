@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Renderer/Texture.h>
+#include <Renderer/SubTexture.h>
 #include <glm/glm.hpp>
 
 namespace Pacman {
@@ -15,9 +15,17 @@ namespace Pacman {
 
 	private:
 
+		void UpdateAnimation(float ts);
+
+	private:
+
 		glm::vec3 m_Position = { 0,0,0 };
 
-		std::shared_ptr<Texture> m_PacmanTexture;
+		float m_Angle = 0;
+
+		int8_t m_CurrentAnimation = 0;
+		float m_AnimationStep = 0;
+		std::vector<std::shared_ptr<SubTexture>> m_PackmanAnimations;
 	};
 
 }

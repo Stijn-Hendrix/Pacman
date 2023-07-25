@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include <glad/glad.h>
+#include <glm/ext/matrix_transform.hpp>
 
 namespace Pacman {
 
@@ -23,7 +24,7 @@ namespace Pacman {
 		std::shared_ptr<Shader> Shader;
 		std::shared_ptr<Texture> WhiteTexture;
 
-		glm::vec3 QuadVertexPositions[4];
+		glm::vec4 QuadVertexPositions[4];
 	};
 
 	static RendererData s_Data;
@@ -38,10 +39,10 @@ namespace Pacman {
 
 	void Renderer::Init()
 	{
-		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f };
-		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f };
-		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f };
-		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, };
+		s_Data.QuadVertexPositions[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
+		s_Data.QuadVertexPositions[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
 		InitVertexArray();
 		InitVertexBuffer();
@@ -87,28 +88,81 @@ namespace Pacman {
 		glBindVertexArray(s_Data.VAO);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec4& color)
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color)
 	{
 		s_Data.Shader->Bind();
 		s_Data.WhiteTexture->Bind();
-		FlushQuad(position, color);
+
+		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+		FlushQuad(position, size, color, textureCoords);
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, const std::shared_ptr<Texture>& texture, const glm::vec4& color)
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const std::shared_ptr<Texture>& texture, const glm::vec4& color)
 	{
 		s_Data.Shader->Bind();
 		texture->Bind();
-		FlushQuad(position, color);
+
+		constexpr glm::vec2 textureCoords[] = { { 0.0f, 0.0f }, { 1.0f, 0.0f }, { 1.0f, 1.0f }, { 0.0f, 1.0f } };
+
+		FlushQuad(position, size, color, textureCoords);
+	}
+
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const std::shared_ptr<SubTexture>& subTexture, const glm::vec4& color)
+	{
+		s_Data.Shader->Bind();
+
+		auto& texture = subTexture->GetTexture();
+		const glm::vec2* textureCoords = subTexture->GetTexCoords();
+
+		texture->Bind();
+		FlushQuad(position, size, color, textureCoords);
+	}
+
+	void Renderer::DrawQuadRotated(const glm::vec3& position, const glm::vec2& size, float rotation, const std::shared_ptr<SubTexture>& subTexture, const glm::vec4& color)
+	{
+		s_Data.Shader->Bind();
+
+		auto& texture = subTexture->GetTexture();
+		const glm::vec2* textureCoords = subTexture->GetTexCoords();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), glm::vec3(position))
+			* glm::rotate(glm::mat4(1.0f), glm::radians(rotation), { 0.0f, 0.0f, 1.0f })
+			* glm::scale(glm::mat4(1.0f), { size.x, size.y, 1.0f });
+
+		texture->Bind();
+		FlushQuad(transform, color, textureCoords);
 	}
 
 
-	void Renderer::FlushQuad(const glm::vec3& position, const glm::vec4& color)
+
+	void Renderer::FlushQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color, const glm::vec2 textureCoords[4])
+	{
+		const float halfSizeX = size.x / 2.0f;
+		const float halfSizeY = size.y / 2.0f;
+
+		QuadVertex vertices[] = {
+			{ glm::vec3(position.x - halfSizeX, position.y - halfSizeY, 0), color, textureCoords[0] },
+			{ glm::vec3(position.x + halfSizeX, position.y - halfSizeY, 0), color, textureCoords[1] },
+			{ glm::vec3(position.x + halfSizeX, position.y + halfSizeY, 0), color, textureCoords[2] },
+			{ glm::vec3(position.x - halfSizeX, position.y + halfSizeY, 0), color, textureCoords[3] }
+		};
+
+		glBindVertexArray(s_Data.VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, s_Data.VBO);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(QuadVertex) * 4, vertices);
+
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+	void Renderer::FlushQuad(const glm::mat4& transform, const glm::vec4& color, const glm::vec2 textureCoords[4])
 	{
 		QuadVertex vertices[] = {
-			{ position + s_Data.QuadVertexPositions[0], color, {0, 0} },
-			{ position + s_Data.QuadVertexPositions[1], color, {1, 0} },
-			{ position + s_Data.QuadVertexPositions[2], color, {1, 1} },
-			{ position + s_Data.QuadVertexPositions[3], color, {0, 1} }
+			{ transform * s_Data.QuadVertexPositions[0], color, textureCoords[0] },
+			{ transform * s_Data.QuadVertexPositions[1], color, textureCoords[1] },
+			{ transform * s_Data.QuadVertexPositions[2], color, textureCoords[2] },
+			{ transform * s_Data.QuadVertexPositions[3], color, textureCoords[3] }
 		};
 
 		glBindVertexArray(s_Data.VAO);
