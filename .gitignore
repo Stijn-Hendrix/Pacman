@@ -1,0 +1,23 @@
+# Directories
+**bin/
+**bin-int/
+
+**/bin/
+bin-int/
+Intermediates/
+
+# Files
+*.user
+*.log
+
+# Visual Studio
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+
+*.json
+
+scripts/__pycache__
