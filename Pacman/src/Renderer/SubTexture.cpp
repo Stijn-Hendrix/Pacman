@@ -14,7 +14,7 @@ namespace Pacman {
 		m_TexCoords[3] = { min.x, max.y };
 	}
 
-	std::shared_ptr<SubTexture> SubTexture::CreateFromCoords(const std::shared_ptr<Texture>& texture, const glm::vec2& coords, const glm::vec2& spriteSize, uint32_t shrink)
+	std::shared_ptr<SubTexture> SubTexture::CreateFromCoords(const std::shared_ptr<Texture>& texture, const glm::vec2& coords, const glm::vec2& spriteSize, float shrink)
 	{
 		glm::vec2 min = { (coords.x * spriteSize.x + shrink) / texture->GetWidth(), (coords.y * spriteSize.y + shrink) / texture->GetHeight() };
 		glm::vec2 max = { ((coords.x + 1) * spriteSize.x - shrink) / texture->GetWidth(), ((coords.y + 1) * spriteSize.y - shrink) / texture->GetHeight() };

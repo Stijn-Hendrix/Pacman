@@ -22,6 +22,7 @@ namespace Pacman {
 		glm::vec3 m_Position = { 0,0,0 };
 
 		float m_Angle = 0;
+		bool m_Invert = false;
 
 		int8_t m_CurrentAnimation = 0;
 		float m_AnimationStep = 0;

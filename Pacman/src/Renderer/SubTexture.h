@@ -14,7 +14,7 @@ namespace Pacman {
 		const glm::vec2* GetTexCoords() const { return m_TexCoords; }
 
 		// Shrink ensure there is no bleed over between tiles, by "shrinking" the tile by a given amount
-		static std::shared_ptr<SubTexture> CreateFromCoords(const std::shared_ptr<Texture>& texture, const glm::vec2& coords, const glm::vec2& spriteSize, uint32_t shrink = 0);
+		static std::shared_ptr<SubTexture> CreateFromCoords(const std::shared_ptr<Texture>& texture, const glm::vec2& coords, const glm::vec2& spriteSize, float shrink = 0.0f);
 
 	private:
 		std::shared_ptr<Texture> m_Texture;

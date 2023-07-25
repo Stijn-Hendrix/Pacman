@@ -9,7 +9,7 @@ namespace Pacman {
 
 	public:
 
-		Camera(uint32_t width, uint32_t height, float zoom = 10);
+		Camera(uint32_t width, uint32_t height, float zoom = 13.8f);
 
 		const glm::mat4& GetViewProjection() const { return m_ProjectionMatrix; }
 

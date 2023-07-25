@@ -28,22 +28,26 @@ namespace Pacman {
 		if (Input::IsKeyPressed(Key::A))
 		{
 			m_Position.x -= ts * moveSpeed;
-			m_Angle = 180;
+			m_Angle = 0;
+			m_Invert = true;
 		}
 		else if (Input::IsKeyPressed(Key::D))
 		{
 			m_Position.x += ts * moveSpeed;
 			m_Angle = 0;
+			m_Invert = false;
 		}
-		if (Input::IsKeyPressed(Key::S))
+		else if (Input::IsKeyPressed(Key::S))
 		{
 			m_Position.y -= ts * moveSpeed;
 			m_Angle = -90;
+			m_Invert = false;
 		}
 		else if (Input::IsKeyPressed(Key::W))
 		{
 			m_Position.y += ts * moveSpeed;
 			m_Angle = 90;
+			m_Invert = false;
 		}
 
 		UpdateAnimation(ts);
@@ -51,7 +55,7 @@ namespace Pacman {
 
 	void Player::OnDraw()
 	{
-		Renderer::DrawQuadRotated(m_Position, { 1, 1 }, m_Angle, m_PackmanAnimations[m_CurrentAnimation]);
+		Renderer::DrawQuadRotated(m_Position, { m_Invert ? -1 : 1, 1 }, m_Angle, m_PackmanAnimations[m_CurrentAnimation]);
 	}
 
 	void Player::UpdateAnimation(float ts)
