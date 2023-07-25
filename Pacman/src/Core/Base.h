@@ -2,4 +2,4 @@
 
 #include "ppch.h"
 
-#define ASSERT(x, ...) { if(!(x)) { std::cout<< "Assertion failed: " << __VA_ARGS__ << std::endl; __debugbreak(); } }
+#define ASSERT(x, ...) { if(!(x)) { std::cout<< "[Error] Assertion failed: " << __VA_ARGS__ << std::endl; __debugbreak(); } }

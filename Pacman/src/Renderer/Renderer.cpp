@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include "Shader.h"
+#include "Texture.h"
 
 #include <glad/glad.h>
 
@@ -11,8 +12,10 @@ namespace Pacman {
 	{
 		glm::vec3 Position;
 		glm::vec4 Color;
+		glm::vec2 TexCoord;
 
-		QuadVertex(glm::vec3 position, glm::vec4 color) : Position(position), Color(color) {}
+		QuadVertex(const glm::vec3& position, const glm::vec4& color, const glm::vec2& texCoord)
+			: Position(position), Color(color), TexCoord(texCoord){}
 	};
 
 	struct RendererData
@@ -21,6 +24,7 @@ namespace Pacman {
 		uint32_t VAO;
 		uint32_t IBO;
 		std::shared_ptr<Shader> Shader;
+		std::shared_ptr<Texture> WhiteTexture;
 
 		glm::vec3 QuadVertexPositions[4];
 	};
@@ -39,6 +43,8 @@ namespace Pacman {
 		InitIndexBuffer();
 
 		s_Data.Shader = Shader::Create("assets/shaders/vert.glsl", "assets/shaders/frag.glsl");
+
+		s_Data.WhiteTexture = Texture::Create("assets/textures/white.png");
 	}
 
 	void Renderer::InitVertexBuffer()
@@ -54,6 +60,8 @@ namespace Pacman {
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, stride, (void*)(3 * sizeof(float)));
 		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)(7 * sizeof(float)));
+		glEnableVertexAttribArray(2);
 	}
 
 	void Renderer::InitIndexBuffer()
@@ -76,15 +84,28 @@ namespace Pacman {
 
 	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec4& color)
 	{
+		s_Data.Shader->Bind();
+		s_Data.WhiteTexture->Bind();
+		FlushQuad(position, color);
+	}
+
+	void Renderer::DrawQuad(const glm::vec3& position, const std::shared_ptr<Texture>& texture, const glm::vec4& color)
+	{
+		s_Data.Shader->Bind();
+		texture->Bind();
+		FlushQuad(position, color);
+	}
+
+
+	void Renderer::FlushQuad(const glm::vec3& position, const glm::vec4& color)
+	{
 		QuadVertex vertices[] = {
-			{position + s_Data.QuadVertexPositions[0], color},
-			{position + s_Data.QuadVertexPositions[1], color},
-			{position + s_Data.QuadVertexPositions[2], color},
-			{position + s_Data.QuadVertexPositions[3], color},
+			{ position + s_Data.QuadVertexPositions[0], color, {0, 0} },
+			{ position + s_Data.QuadVertexPositions[1], color, {1, 0} },
+			{ position + s_Data.QuadVertexPositions[2], color, {1, 1} },
+			{ position + s_Data.QuadVertexPositions[3], color, {0, 1} }
 		};
 
-
-		s_Data.Shader->Bind();
 		glBindVertexArray(s_Data.VAO);
 
 		glBindBuffer(GL_ARRAY_BUFFER, s_Data.VBO);
@@ -98,5 +119,5 @@ namespace Pacman {
 		glDeleteBuffers(1, &s_Data.VBO);
 		glDeleteVertexArrays(1, &s_Data.VAO);
 	}
-	
+
 }

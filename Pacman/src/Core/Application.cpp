@@ -13,6 +13,8 @@ namespace Pacman {
 		m_Window = std::make_unique<Window>();
 		m_Window->Init(name, width, height);
 
+		m_Game = std::make_unique<Game>();
+
 		m_Window->SetResizeEventCallback([this](int width, int height) {
 			m_Game->OnResizeViewport(width, height);
 		});

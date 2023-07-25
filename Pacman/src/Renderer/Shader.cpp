@@ -1,6 +1,8 @@
 #include "ppch.h"
 #include "Shader.h"
 
+#include "Core/Base.h"
+
 #include <glad/glad.h>
 
 namespace Pacman {
@@ -46,7 +48,7 @@ namespace Pacman {
 		if (!success)
 		{
 			glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+			ASSERT(false, "Failed to compile vertex shader: " << infoLog);
 		}
 
 		uint32_t fragmentShader;
@@ -58,7 +60,7 @@ namespace Pacman {
 		if (!success)
 		{
 			glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+			ASSERT(false, "Failed to compile fragment shader: " << infoLog);
 		}
 
 		m_RendererID = glCreateProgram();
@@ -89,6 +91,7 @@ namespace Pacman {
 	}
 
 
+
 	uint32_t Shader::GetUniformLocation(const std::string& name)
 	{
 		if (m_UniformCache.find(name) == m_UniformCache.end())
@@ -100,10 +103,15 @@ namespace Pacman {
 		return m_UniformCache[name];
 	}
 
-	void Shader::SetFloat(const std::string& name, float value)
+	void Shader::SetUnifromFloat1(const std::string& name, float value)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1f(location, value);
 	}
 	
+	void Shader::SetUniform1i(const std::string& name, int value)
+	{
+		GLint location = GetUniformLocation(name);
+		glUniform1i(location, value);
+	}
 }
