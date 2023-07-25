@@ -24,6 +24,8 @@ namespace Pacman {
 
 	void Application::Run()
 	{
+		m_Game->OnStart();
+
 		while (m_Running)
 		{
 			float time = (float)glfwGetTime();
@@ -34,6 +36,8 @@ namespace Pacman {
 
 			m_Window->Update();
 		}
+
+		m_Game->OnEnd();
 	}
 
 }
