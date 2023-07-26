@@ -33,6 +33,8 @@ namespace Pacman {
 		glm::vec3 m_Direction = { -1, 0, 0 };
 		glm::vec3 m_Position = { 0, 0, 0 };
 
+		uint16_t m_CollectedCoins = 0;
+
 		float m_Angle = 0;
 		bool m_Invert = true;
 

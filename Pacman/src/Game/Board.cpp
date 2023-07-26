@@ -115,6 +115,8 @@ namespace Pacman {
 						m_WallTileSprites.push_back(tile);
 					}
 
+				
+
 					CoinSprite tile;
 					tile.Occupied = false;
 					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f, 0 };
@@ -130,6 +132,8 @@ namespace Pacman {
 					tile.Size = { 0.8f, 0.8f };
 					tile.Color = glm::vec4(1, 1, 1, 1);
 					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
+
+					m_RemainingCoins++;
 				}
 			}
 		}
@@ -159,5 +163,18 @@ namespace Pacman {
 			if (sprite.Occupied)
 				Renderer::DrawQuad(sprite.Position, sprite.Size, m_Coin, sprite.Color);
 		}
+	}
+	void Board::RemoveCoin(float x, float y)
+	{
+		auto& [xx, yy] = PositionToCoord(x, y);
+		uint32_t index = CoordToIndex(xx, yy);
+
+		TileType tile = m_Tiles[index];
+
+		m_Tiles[index] = m_Tiles[index] & ~COIN;
+		m_CoinTileSprites[index].Occupied = false;
+		m_RemainingCoins--;
+
+		LOG("Coins remaining: " << m_RemainingCoins);
 	}
 }

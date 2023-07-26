@@ -23,6 +23,9 @@ namespace Pacman {
 		void OnUpdate(float ts);
 		void OnDraw();
 
+		void RemoveCoin(float x, float y);
+
+	public:
 		bool IsWall(float x, float y)
 		{
 			auto& [xx, yy] = PositionToCoord(x, y);
@@ -32,7 +35,7 @@ namespace Pacman {
 
 		bool IsInCenterOfTile(float x, float y)
 		{
-			constexpr float tolerance = 1e-2;
+			constexpr float tolerance = 1e-1;
 			auto& [a, b] = PositionToRelativeCoord(x, y);
 			auto& [c, d] = PositionToCoord(x, y);
 			return std::abs(a - c) < tolerance && std::abs(b - d) < tolerance;
@@ -53,14 +56,6 @@ namespace Pacman {
 		{
 			auto& [xx, yy] = PositionToCoord(x, y);
 			return m_Tiles[CoordToIndex(xx, yy)];
-		}
-
-		void RemoveCoin(float x, float y)
-		{
-			auto& [xx, yy] = PositionToCoord(x, y);
-			uint8_t index = CoordToIndex(xx, yy);
-			m_Tiles[index] = m_Tiles[index] & ~COIN;
-			m_CoinTileSprites[index].Occupied = false;
 		}
 
 	private:
@@ -118,6 +113,8 @@ namespace Pacman {
 		std::vector<CoinSprite> m_CoinTileSprites;
 
 		std::shared_ptr<Texture> m_Coin;
+
+		uint16_t m_RemainingCoins = 0;
 
 		Player* m_Player;
 

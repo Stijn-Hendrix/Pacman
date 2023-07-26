@@ -80,7 +80,7 @@ namespace Pacman {
 
 	void Player::UpdateMovement(float ts, Board& board)
 	{
-		constexpr float movementSpeed = 2.0f;
+		constexpr float movementSpeed = 5.0f;
 
 		auto& playerPosition = m_Position;
 		auto& playerDirection = m_Direction;
@@ -98,20 +98,15 @@ namespace Pacman {
 		if (currentTile & COIN)
 		{
 			board.RemoveCoin(m_Position.x, m_Position.y);
+			m_CollectedCoins++;
 		}
 	}
 
 	bool Player::CanMoveInDirection(Board& board, const glm::vec3& direction, float ts)
 	{
 		bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
-
-		if (direction == -m_Direction)
-		{
-			isInCenterOfTile = true; // Ignore if the player is in the center of a tile
-		}
-
 		glm::vec3 newPosOffset = m_Position + (direction * ts) + direction;
-		return !board.IsWall(newPosOffset.x, newPosOffset.y) && isInCenterOfTile;
+		return !board.IsWall(newPosOffset.x, newPosOffset.y) && (isInCenterOfTile || direction == -m_Direction);
 	}
 
 }
