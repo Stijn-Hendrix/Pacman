@@ -60,50 +60,37 @@ namespace Pacman {
 				uint8_t type = m_Tiles[CoordToIndex(x, y)];
 				if (type & WALL)
 				{
-					bool allNeighboursWall = true;
 
 					if (CoordToIndex(x - 1, y) != -1 && m_Tiles[CoordToIndex(x - 1, y)] == _)
 					{
-						TileSprite tile;
+						WallSprite tile;
 						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
 						tile.Size = { 0.1f, 0.5f };
-						tile.Color = { 0.337f, 0.341f, 1.0f, 1.0f };
 						m_WallTileSprites.push_back(tile);
-
-						allNeighboursWall = false;
 					}
 
 					if (CoordToIndex(x + 1, y) != -1 && m_Tiles[CoordToIndex(x + 1, y)] == _)
 					{
-						TileSprite tile;
+						WallSprite tile;
 						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
 						tile.Size = { 0.1f, 0.5f };
-						tile.Color = { 0.337f, 0.341f, 1.0f, 1.0f };
 						m_WallTileSprites.push_back(tile);
-
-						allNeighboursWall = false;
 					}
 
 					if (CoordToIndex(x, y - 1) != -1 && m_Tiles[CoordToIndex(x, y - 1)] == _)
 					{
-						TileSprite tile;
+						WallSprite tile;
 						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
 						tile.Size = { 0.5f ,  0.1f };
-						tile.Color = { 0.337f, 0.341f, 1.0f, 1.0f };
 						m_WallTileSprites.push_back(tile);
-
-						allNeighboursWall = false;
 					}
 
 					if (CoordToIndex(x, y + 1) != -1 && m_Tiles[CoordToIndex(x, y + 1)] == _)
 					{
-						TileSprite tile;
+						WallSprite tile;
 						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
 						tile.Size = { 0.5f ,  0.1f };
-						tile.Color = { 0.337f, 0.341f, 1.0f, 1.0f };
 						m_WallTileSprites.push_back(tile);
-
-						allNeighboursWall = false;
 					}
 				
 
@@ -111,7 +98,6 @@ namespace Pacman {
 					tile.Occupied = false;
 					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f };
 					tile.Size = { 0.8f, 0.8f };
-					tile.Color = glm::vec4(1, 1, 1, 1);
 					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 				}
 				else if (type & COIN)
@@ -120,7 +106,6 @@ namespace Pacman {
 					tile.Occupied = true;
 					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f };
 					tile.Size = { 0.8f, 0.8f };
-					tile.Color = glm::vec4(1, 1, 1, 1);
 					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 
 					m_RemainingCoins++;
@@ -187,14 +172,14 @@ namespace Pacman {
 		for (int i = 0; i < m_WallTileSprites.size(); i++)
 		{
 			auto& sprite = m_WallTileSprites[i];
-			Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, sprite.Color);
+			Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, { 0.337f, 0.341f, 1.0f, 1.0f });
 		}
 
 		for (int i = 0; i < m_CoinTileSprites.size(); i++)
 		{
 			auto& sprite = m_CoinTileSprites[i];
 			if (sprite.Occupied)
-				Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, m_Coin, sprite.Color);
+				Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, m_Coin);
 		}
 
 		m_Player.OnDraw(ts);
@@ -216,6 +201,6 @@ namespace Pacman {
 		m_CoinTileSprites[index].Occupied = false;
 		m_RemainingCoins--;
 
-		LOG("Coins remaining: " << m_RemainingCoins);
+		//LOG("Coins remaining: " << m_RemainingCoins);
 	}
 }

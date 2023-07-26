@@ -72,23 +72,17 @@ namespace Pacman {
 		glm::vec2 newPos = playerPosition + (playerDirection * ts) * movementSpeed;
 		glm::vec2 newPosOffset = newPos + playerDirection / 2.0f;
 
-
-		uint8_t nextTile = board.GetTileFromPos(newPosOffset.x, newPosOffset.y);
-		if ((nextTile & WALL) == 0)
+		if (!board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL))
 		{
 			SetPosition(newPos);
 		}
 
-		uint8_t currentTile = board.GetTileFromPos(m_Position.x, m_Position.y);
-		if (currentTile & COIN)
+		if (board.TileHasFlag(m_Position.x, m_Position.y, COIN))
 		{
 			board.RemoveCoin(m_Position.x, m_Position.y);
 			m_CollectedCoins++;
 		}
 
-		if (IsInCenterOfTile(board))
-		{
-			m_Position = board.StickToCenterOfClosestTile(m_Position.x, m_Position.y);
-		}
+		DoCorrectPosition();
 	}
 }

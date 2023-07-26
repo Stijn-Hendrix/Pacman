@@ -59,11 +59,11 @@ namespace Pacman {
 
 	void Ghost::OnWander(float ts, Board& board)
 	{
-		constexpr float movementSpeed = 5.0f;
+		constexpr float movementSpeed = 10.0f;
 
 		if (IsInCenterOfTile(board))
 		{
-			m_Position = board.StickToCenterOfClosestTile(m_Position.x, m_Position.y);
+			DoCorrectPosition();
 
 			// higher bias to continue in the current direction
 			std::vector<Direction> allDirections = { 
@@ -88,7 +88,6 @@ namespace Pacman {
 			{
 				SetDirection(Utils::Opposite(m_CurrentDirection));
 				SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
-				return;
 			}
 		}
 		else
@@ -103,7 +102,7 @@ namespace Pacman {
 		constexpr float movementSpeed = 1.0f;
 
 		SetDirection(Direction::Up);
-		if (board.IsWall(m_Position.x, m_Position.y) || !IsInCenterOfTile(board))
+		if (board.TileHasFlag(m_Position.x, m_Position.y, WALL) || !IsInCenterOfTile(board))
 		{
 			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
 		}

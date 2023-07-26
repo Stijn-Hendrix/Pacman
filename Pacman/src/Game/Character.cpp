@@ -18,7 +18,7 @@ namespace Pacman {
 
 		auto& dir = GetFromDirection(direction);
 		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
-		return !board.IsWall(newPosOffset.x, newPosOffset.y);
+		return !board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL);
 	}
 
 	bool Character::CanChangeDirection(Board& board, Direction direction, float ts)
@@ -26,7 +26,31 @@ namespace Pacman {
 		auto& dir = GetFromDirection(direction);
 		bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
 		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
-		return !board.IsWall(newPosOffset.x, newPosOffset.y) && (isInCenterOfTile || dir == -m_Direction);
+		return !board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL) && (isInCenterOfTile || dir == -m_Direction);
+	}
+
+	// Shifts the character position to stick to the closest tile, throws away
+	// small floating points
+	void Character::DoCorrectPosition()
+	{
+		float x = m_Position.x * 10.0f;
+		float y = m_Position.y * 10.0f;
+
+		switch (m_CurrentDirection)
+		{
+		case Direction::Up:
+			m_Position.x = glm::round(x) / 10.0f;
+			break;
+		case Direction::Down:
+			m_Position.x = glm::round(x) / 10.0f;
+			break;
+		case Direction::Right:
+			m_Position.y = glm::round(y) / 10.0f;
+			break;
+		case Direction::Left:
+			m_Position.y = glm::round(y) / 10.0f;
+			break;
+		}
 	}
 
 	bool Character::IsInCenterOfTile(Board& board)

@@ -27,23 +27,19 @@ namespace Pacman {
 		void RemoveCoin(float x, float y);
 
 	public:
-		bool IsWall(float x, float y)
-		{
-			auto& [xx, yy] = PositionToCoord(x, y);
-			if (xx < 0 || yy < 0 || xx >= m_Width || yy >= m_Height)
-			{
-				return true;
-			}
-			int index = CoordToIndex(xx, yy);
-			return m_Tiles[index] & WALL;
-		}
-
+		
 		bool IsInCenterOfTile(float x, float y)
 		{
 			constexpr float tolerance = 1e-2;
 			auto& [a, b] = PositionToRelativeCoord(x, y);
 			auto& [c, d] = PositionToCoord(x, y);
 			return std::abs(a - c) < tolerance && std::abs(b - d) < tolerance;
+		}
+
+		bool TileHasFlag(float x, float y, TileFlag flag)
+		{
+			auto& [xx, yy] = PositionToCoord(x, y);
+			return m_Tiles[CoordToIndex(xx, yy)] & flag;
 		}
 
 		TileType GetTile(uint32_t index)
@@ -101,10 +97,9 @@ namespace Pacman {
 
 	private:
 
-		struct TileSprite
+		struct WallSprite
 		{
 			glm::vec2 Position;
-			glm::vec4 Color;
 			glm::vec2 Size;
 		};
 
@@ -112,7 +107,6 @@ namespace Pacman {
 		{
 			bool Occupied;
 			glm::vec2 Position;
-			glm::vec4 Color;
 			glm::vec2 Size;
 		};
 
@@ -120,7 +114,7 @@ namespace Pacman {
 		const uint16_t m_Height = 28;
 
 		std::vector<TileType> m_Tiles;
-		std::vector<TileSprite> m_WallTileSprites;
+		std::vector<WallSprite> m_WallTileSprites;
 		std::vector<CoinSprite> m_CoinTileSprites;
 
 		std::shared_ptr<Texture> m_Coin;

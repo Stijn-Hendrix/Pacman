@@ -105,6 +105,8 @@ namespace Pacman {
 		bool CanChangeDirection(Board& board, Direction direction, float ts);
 		bool IsInCenterOfTile(Board& board);
 
+		void DoCorrectPosition();
+
 	protected:
 
 		glm::vec2 m_Position = { 0, 0 };
