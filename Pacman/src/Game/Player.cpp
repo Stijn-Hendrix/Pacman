@@ -11,16 +11,19 @@ namespace Pacman {
 	Player::Player()
 	{
 		auto texture = Texture::Create("assets/textures/pacman.png");
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 3, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 4, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }));
-		m_PackmanAnimations.push_back(SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 }));
 
-		m_CurrentAnimation = 0;
+		m_Animation =
+		{ 
+			SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 3, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 4, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 })
+		};
+		m_Animation.SetSpeed(4);
 	}
 
 	void Player::OnUpdate(float ts, Board& board)
@@ -69,13 +72,12 @@ namespace Pacman {
 
 	void Player::OnDraw()
 	{
-		Renderer::DrawQuadRotated(m_Position, { m_Invert ? -1 : 1, 1 }, m_Angle, m_PackmanAnimations[m_CurrentAnimation]);
+		Renderer::DrawQuadRotated(m_Position, { m_Invert ? -1 : 1, 1 }, m_Angle, m_Animation.GetCurrentAnimation());
 	}
 
 	void Player::UpdateAnimation(float ts)
 	{
-		m_AnimationStep += ts * 5;
-		m_CurrentAnimation = std::round(std::abs(glm::sin(m_AnimationStep)) * (m_PackmanAnimations.size() - 1));
+		m_Animation.Update(ts);
 	}
 
 	void Player::UpdateMovement(float ts, Board& board)

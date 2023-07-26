@@ -1,6 +1,8 @@
 #pragma once
 
 #include <Renderer/SubTexture.h>
+#include <Renderer/AnimationLoop.h>
+
 #include <glm/glm.hpp>
 
 
@@ -38,9 +40,7 @@ namespace Pacman {
 		float m_Angle = 0;
 		bool m_Invert = true;
 
-		int8_t m_CurrentAnimation = 0;
-		float m_AnimationStep = 0;
-		std::vector<std::shared_ptr<SubTexture>> m_PackmanAnimations;
+		AnimationLoop m_Animation;
 	};
 
 }
