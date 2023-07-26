@@ -18,6 +18,7 @@ namespace Pacman {
 	public:
 		void OnStart();
 		void OnUpdate(float ts);
+		void OnDraw(float ts);
 		void OnEnd();
 
 	private:

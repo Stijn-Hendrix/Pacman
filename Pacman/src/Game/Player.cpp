@@ -76,13 +76,15 @@ namespace Pacman {
 		{
 			SetPosition(newPos);
 		}
-
+	
 		if (board.TileHasFlag(m_Position.x, m_Position.y, COIN))
 		{
 			board.RemoveCoin(m_Position.x, m_Position.y);
 			m_CollectedCoins++;
 		}
-
+		
 		DoCorrectPosition();
+
+		LOG(m_Position.x << " " << m_Position.y);
 	}
 }

@@ -87,15 +87,10 @@ namespace Pacman {
 		{
 			switch (direction)
 			{
-			case Direction::Up:
-				return { 0, 1 };
-			case Direction::Down:
-				return { 0, -1 };
-				break;
-			case Direction::Right:
-				return { 1, 0 };
-			case Direction::Left:
-				return { -1, 0 };
+			case Direction::Up:		return { 0.0f, 1.0f };
+			case Direction::Down:	return { 0.0f, -1.0f };
+			case Direction::Right:	return { 1.0f, 0.0f };
+			case Direction::Left:	return { -1.0f, 0.0f };
 			}
 		}
 

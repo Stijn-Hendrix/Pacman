@@ -44,7 +44,13 @@ namespace Pacman {
 
 			glfwSetWindowTitle(m_Window->GetNativeWindow(), name.c_str());
 
-			m_Game->OnUpdate(timestep);
+			// TEMP fix. When the window is dragged, the fps goes down to ~5.
+			// This causes the characters take large steps, causing them to go
+			// outside the grid
+			if (m_FpsCounter.GetFPS() > 30) 
+				m_Game->OnUpdate(timestep);
+
+			m_Game->OnDraw(timestep);
 
 			m_Window->Update();
 		}

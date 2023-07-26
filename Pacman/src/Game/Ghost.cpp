@@ -59,7 +59,7 @@ namespace Pacman {
 
 	void Ghost::OnWander(float ts, Board& board)
 	{
-		constexpr float movementSpeed = 10.0f;
+		constexpr float movementSpeed = 5.0f;
 
 		if (IsInCenterOfTile(board))
 		{

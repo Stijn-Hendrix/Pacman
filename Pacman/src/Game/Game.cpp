@@ -23,7 +23,10 @@ namespace Pacman {
 	void Game::OnUpdate(float ts)
 	{
 		m_Board.OnUpdate(ts);
+	}
 
+	void Game::OnDraw(float ts)
+	{
 		Renderer::BeginScene(m_Camera);
 		m_Board.OnDraw(ts);
 	}
