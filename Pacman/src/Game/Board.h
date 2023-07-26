@@ -60,19 +60,19 @@ namespace Pacman {
 			auto& [xx, yy] = PositionToCoord(x, y);
 			uint8_t index = CoordToIndex(xx, yy);
 			m_Tiles[index] = m_Tiles[index] & ~COIN;
-			m_CoinTileSprites[index].Color = { 1,0,0,1 };
+			m_CoinTileSprites[index].Occupied = false;
 		}
 
 	private:
 
 		int32_t CoordToIndex(uint32_t x, uint32_t y)
 		{
-			uint32_t i = (m_Height - 1 - y) * m_Width + x; // Board is flipped
+			uint32_t i = y * m_Width + x;
 			if (i < 0 || i >= m_Tiles.size()) return -1;
 			return i;
 		}
 
-		glm::vec3 PositionFromCoord(uint32_t x, uint32_t y)
+		glm::vec3 CoordToPosition(uint32_t x, uint32_t y)
 		{
 			float posX = x - (m_Width / 2.0f) + 0.5f;
 			float posY = y - (m_Height / 2.0f) + 0.5f;

@@ -80,16 +80,18 @@ namespace Pacman {
 
 	void Player::UpdateMovement(float ts, Board& board)
 	{
+		constexpr float movementSpeed = 2.0f;
+
 		auto& playerPosition = m_Position;
 		auto& playerDirection = m_Direction;
-		glm::vec3 newPos = playerPosition + (playerDirection * ts);
-		glm::vec3 newPosOffset = playerPosition + (playerDirection * ts) + playerDirection / 2.0f;
+		glm::vec3 newPos = playerPosition + (playerDirection * ts) * movementSpeed;
+		glm::vec3 newPosOffset = newPos + playerDirection / 2.0f;
 
 
 		uint8_t nextTile = board.GetTileFromPos(newPosOffset.x, newPosOffset.y);
 		if ((nextTile & WALL) == 0)
 		{
-			SetPosition(playerPosition + (playerDirection * ts));
+			SetPosition(newPos);
 		}
 
 		uint8_t currentTile = board.GetTileFromPos(m_Position.x, m_Position.y);

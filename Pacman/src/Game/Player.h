@@ -31,7 +31,6 @@ namespace Pacman {
 	private:
 
 		glm::vec3 m_Direction = { -1, 0, 0 };
-
 		glm::vec3 m_Position = { 0, 0, 0 };
 
 		float m_Angle = 0;
