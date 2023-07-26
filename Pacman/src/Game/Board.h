@@ -63,7 +63,7 @@ namespace Pacman {
 			return m_Tiles[CoordToIndex(xx, yy)];
 		}
 
-		glm::vec3 StickToCenterOfClosestTile(float x, float y)
+		glm::vec2 StickToCenterOfClosestTile(float x, float y)
 		{
 			auto [xx, yy] = PositionToCoord(x, y);
 			return CoordToPosition(xx, yy);
@@ -78,11 +78,11 @@ namespace Pacman {
 			return i;
 		}
 
-		glm::vec3 CoordToPosition(uint32_t x, uint32_t y)
+		glm::vec2 CoordToPosition(uint32_t x, uint32_t y)
 		{
 			float posX = x - (m_Width / 2.0f) + 0.5f;
 			float posY = y - (m_Height / 2.0f) + 0.5f;
-			return { posX, posY, 0 };
+			return { posX, posY };
 		}
 
 		std::pair<int, int> PositionToCoord(float x, float y)
@@ -103,7 +103,7 @@ namespace Pacman {
 
 		struct TileSprite
 		{
-			glm::vec3 Position;
+			glm::vec2 Position;
 			glm::vec4 Color;
 			glm::vec2 Size;
 		};
@@ -111,7 +111,7 @@ namespace Pacman {
 		struct CoinSprite
 		{
 			bool Occupied;
-			glm::vec3 Position;
+			glm::vec2 Position;
 			glm::vec4 Color;
 			glm::vec2 Size;
 		};

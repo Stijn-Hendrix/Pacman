@@ -69,8 +69,8 @@ namespace Pacman {
 
 		auto& playerPosition = m_Position;
 		auto& playerDirection = m_Direction;
-		glm::vec3 newPos = playerPosition + (playerDirection * ts) * movementSpeed;
-		glm::vec3 newPosOffset = newPos + playerDirection / 2.0f;
+		glm::vec2 newPos = playerPosition + (playerDirection * ts) * movementSpeed;
+		glm::vec2 newPosOffset = newPos + playerDirection / 2.0f;
 
 
 		uint8_t nextTile = board.GetTileFromPos(newPosOffset.x, newPosOffset.y);

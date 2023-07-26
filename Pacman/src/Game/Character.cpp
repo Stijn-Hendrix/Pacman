@@ -10,15 +10,14 @@ namespace Pacman {
 	{
 		m_Animation.Update(ts);
 
-		Renderer::DrawQuadRotated(m_Position, { m_Invert ? -1 : 1, 1 }, m_Angle, m_Animation.GetCurrentAnimation());
+		Renderer::DrawQuadRotated(glm::vec3(m_Position, 0), { m_Invert ? -1 : 1, 1 }, m_Angle, m_Animation.GetCurrentAnimation());
 	}
 
 	bool Character::CanMoveInDirection(Board& board, Direction direction, float ts)
 	{
 
 		auto& dir = GetFromDirection(direction);
-		//bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
-		glm::vec3 newPosOffset = m_Position + (dir * ts) + dir;
+		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
 		return !board.IsWall(newPosOffset.x, newPosOffset.y);
 	}
 
@@ -26,7 +25,7 @@ namespace Pacman {
 	{
 		auto& dir = GetFromDirection(direction);
 		bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
-		glm::vec3 newPosOffset = m_Position + (dir * ts) + dir;
+		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
 		return !board.IsWall(newPosOffset.x, newPosOffset.y) && (isInCenterOfTile || dir == -m_Direction);
 	}
 
