@@ -9,6 +9,7 @@ namespace Pacman {
 	enum class GhostState
 	{
 		Wander = 0,
+		LeavePen
 	};
 
 	class Ghost :  public Character
@@ -21,7 +22,7 @@ namespace Pacman {
 		}
 
 		Ghost(const AnimationLoop& animationLoop) 
-			: Character(animationLoop), m_CurrentState(GhostState::Wander), rng()
+			: Character(animationLoop), m_CurrentState(GhostState::LeavePen), rng()
 		{
 			m_Animation.SetSpeed(4);
 			SetCanRotate(false);
@@ -32,6 +33,7 @@ namespace Pacman {
 	private:
 
 		void OnWander(float ts, Board& board);
+		void OnLeavePen(float ts, Board& board);
 
 	private:
 

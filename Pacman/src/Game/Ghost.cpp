@@ -50,21 +50,24 @@ namespace Pacman {
 			case Pacman::GhostState::Wander:  
 				OnWander(ts, board); 
 				return;
+			case Pacman::GhostState::LeavePen:
+				OnLeavePen(ts, board);
+				return;
 		}
 		
 	}
 
 	void Ghost::OnWander(float ts, Board& board)
 	{
-		constexpr float movementSpeed = 3.0f;
+		constexpr float movementSpeed = 5.0f;
 
-		if (IsInCenterOfTile(board, m_CurrentDirection))
+		if (IsInCenterOfTile(board))
 		{
-			// 66% percent bias to continue in the current direction
+			m_Position = board.StickToCenterOfClosestTile(m_Position.x, m_Position.y);
+
+			// higher bias to continue in the current direction
 			std::vector<Direction> allDirections = { 
 				Utils::Previous(m_CurrentDirection), 
-				m_CurrentDirection,
-				m_CurrentDirection,
 				m_CurrentDirection,
 				m_CurrentDirection, 
 				Utils::Next(m_CurrentDirection)
@@ -93,5 +96,20 @@ namespace Pacman {
 			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
 		}
 		
+	}
+
+	void Ghost::OnLeavePen(float ts, Board& board)
+	{
+		constexpr float movementSpeed = 1.0f;
+
+		SetDirection(Direction::Up);
+		if (board.IsWall(m_Position.x, m_Position.y) || !IsInCenterOfTile(board))
+		{
+			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
+		}
+		else
+		{
+			m_CurrentState = GhostState::Wander;
+		}
 	}
 }

@@ -104,7 +104,7 @@ namespace Pacman {
 
 						allNeighboursWall = false;
 					}
-
+					/*
 					if (allNeighboursWall)
 					{
 						TileSprite tile;
@@ -113,7 +113,7 @@ namespace Pacman {
 						tile.Color = { 0.337f, 0.341f, 1.0f, 1.0f };
 						m_WallTileSprites.push_back(tile);
 					}
-
+					*/
 				
 
 					CoinSprite tile;
@@ -143,43 +143,42 @@ namespace Pacman {
 
 		m_Player.SetPosition(playerStartPos);
 
-
-		auto redghostTexture = Texture::Create("assets/textures/redghost.png");
-
-		Ghost redGhost = { 
-			{
-				SubTexture::CreateFromCoords(redghostTexture, { 0, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 1, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 2, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 3, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 4, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 5, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 6, 0 }, { 16,16 }),
-				SubTexture::CreateFromCoords(redghostTexture, { 7, 0 }, { 16,16 }) 
-			}
+		std::vector<glm::vec3> ghostStartPositions = {
+			CoordToPosition(13, 14),
+			CoordToPosition(14, 14),
+			CoordToPosition(15, 14),
+			CoordToPosition(13, 13),
+			CoordToPosition(14, 13)
 		};
-		redGhost.SetPosition(CoordToPosition(13, 16) + glm::vec3(0.5f, 0, 0));
 
-		auto greenghostTexture = Texture::Create("assets/textures/greenghost.png");
+		std::vector<std::string> ghostTextures = {
+			"assets/textures/redghost.png",
+			"assets/textures/greenghost.png",
+			"assets/textures/orangeghost.png",
+			"assets/textures/yellowghost.png",
+			"assets/textures/blueghost.png"
+		};
 
-		Ghost greenGhost = {
+		for (int i = 0; i < ghostStartPositions.size(); i++)
 		{
-			SubTexture::CreateFromCoords(greenghostTexture, { 0, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 1, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 2, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 3, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 4, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 5, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 6, 0 }, { 16,16 }),
-			SubTexture::CreateFromCoords(greenghostTexture, { 7, 0 }, { 16,16 })
-		}
-		};
-		greenGhost.SetPosition(CoordToPosition(14, 16) + glm::vec3(0.5f, 0, 0));
+			auto texture = Texture::Create(ghostTextures[i]);
 
-		m_Ghosts = {
-			redGhost,
-			greenGhost
-		};
+			Ghost ghost = {
+				{
+					SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 3, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 4, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 })
+				}
+			};
+
+			ghost.SetPosition(ghostStartPositions[i]);
+			m_Ghosts.push_back(ghost);
+		}
 	}
 
 	void Board::OnUpdate(float ts)

@@ -85,5 +85,10 @@ namespace Pacman {
 			board.RemoveCoin(m_Position.x, m_Position.y);
 			m_CollectedCoins++;
 		}
+
+		if (IsInCenterOfTile(board))
+		{
+			m_Position = board.StickToCenterOfClosestTile(m_Position.x, m_Position.y);
+		}
 	}
 }

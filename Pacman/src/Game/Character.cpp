@@ -30,9 +30,8 @@ namespace Pacman {
 		return !board.IsWall(newPosOffset.x, newPosOffset.y) && (isInCenterOfTile || dir == -m_Direction);
 	}
 
-	bool Character::IsInCenterOfTile(Board& board, Direction direction)
+	bool Character::IsInCenterOfTile(Board& board)
 	{
-		auto& dir = GetFromDirection(direction);
 		return board.IsInCenterOfTile(m_Position.x, m_Position.y);
 	}
 

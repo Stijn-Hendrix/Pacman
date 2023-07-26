@@ -103,7 +103,7 @@ namespace Pacman {
 		
 		bool CanMoveInDirection(Board& board, Direction direction, float ts);
 		bool CanChangeDirection(Board& board, Direction direction, float ts);
-		bool IsInCenterOfTile(Board& board, Direction direction);
+		bool IsInCenterOfTile(Board& board);
 
 	protected:
 

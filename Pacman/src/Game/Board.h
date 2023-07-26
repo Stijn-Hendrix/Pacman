@@ -40,7 +40,7 @@ namespace Pacman {
 
 		bool IsInCenterOfTile(float x, float y)
 		{
-			constexpr float tolerance = 1e-1;
+			constexpr float tolerance = 1e-2;
 			auto& [a, b] = PositionToRelativeCoord(x, y);
 			auto& [c, d] = PositionToCoord(x, y);
 			return std::abs(a - c) < tolerance && std::abs(b - d) < tolerance;
@@ -61,6 +61,12 @@ namespace Pacman {
 		{
 			auto& [xx, yy] = PositionToCoord(x, y);
 			return m_Tiles[CoordToIndex(xx, yy)];
+		}
+
+		glm::vec3 StickToCenterOfClosestTile(float x, float y)
+		{
+			auto [xx, yy] = PositionToCoord(x, y);
+			return CoordToPosition(xx, yy);
 		}
 
 	private:
