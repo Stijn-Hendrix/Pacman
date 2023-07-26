@@ -6,7 +6,7 @@
 namespace Pacman {
 	
 	Game::Game(uint32_t width, uint32_t height)
-		: m_Camera(width, height), m_Player(), m_Board(&m_Player)
+		: m_Camera(width, height)
 	{
 	}
 
@@ -23,12 +23,9 @@ namespace Pacman {
 	void Game::OnUpdate(float ts)
 	{
 		m_Board.OnUpdate(ts);
-		m_Player.OnUpdate(ts, m_Board);
-
 
 		Renderer::BeginScene(m_Camera);
-		m_Board.OnDraw();
-		m_Player.OnDraw();
+		m_Board.OnDraw(ts);
 	}
 
 	void Game::OnEnd()

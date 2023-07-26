@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 
 #include "Player.h"
+#include "Ghost.h"
 
 namespace Pacman {
 
@@ -18,10 +19,10 @@ namespace Pacman {
 	class Board
 	{
 	public:
-		Board(Player* player);
+		Board();
 
 		void OnUpdate(float ts);
-		void OnDraw();
+		void OnDraw(float ts);
 
 		void RemoveCoin(float x, float y);
 
@@ -29,6 +30,10 @@ namespace Pacman {
 		bool IsWall(float x, float y)
 		{
 			auto& [xx, yy] = PositionToCoord(x, y);
+			if (xx < 0 || yy < 0 || xx >= m_Width || yy >= m_Height)
+			{
+				return true;
+			}
 			int index = CoordToIndex(xx, yy);
 			return m_Tiles[index] & WALL;
 		}
@@ -116,8 +121,8 @@ namespace Pacman {
 
 		uint16_t m_RemainingCoins = 0;
 
-		Player* m_Player;
-
+		Player m_Player;
+		std::vector<Ghost> m_Ghosts;
 	};
 
 }

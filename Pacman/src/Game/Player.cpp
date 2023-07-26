@@ -9,6 +9,7 @@
 namespace Pacman {
 
 	Player::Player()
+		: Character()
 	{
 		auto texture = Texture::Create("assets/textures/pacman.png");
 
@@ -31,54 +32,36 @@ namespace Pacman {
 
 		if (Input::IsKeyPressed(Key::A))
 		{
-			if (CanMoveInDirection(board, { -1, 0, 0 }, ts))
+			if (CanChangeDirection(board, Direction::Left, ts))
 			{
-				m_Direction = { -1, 0, 0 };
-				m_Angle = 0;
-				m_Invert = true;
+				SetDirection(Direction::Left);
 			}
 		}
 		else if (Input::IsKeyPressed(Key::D))
 		{
-			if (CanMoveInDirection(board, { 1, 0, 0 }, ts))
+			if (CanChangeDirection(board, Direction::Right, ts))
 			{
-				m_Direction = { 1, 0, 0 };
-				m_Angle = 0;
-				m_Invert = false;
+				SetDirection(Direction::Right);
 			}
 		}
 		else if (Input::IsKeyPressed(Key::S))
 		{
-			if (CanMoveInDirection(board, { 0, -1, 0 }, ts))
+			if (CanChangeDirection(board, Direction::Down, ts))
 			{
-				m_Direction = { 0, -1, 0 };
-				m_Angle = -90;
-				m_Invert = false;
+				SetDirection(Direction::Down);
 			}
 		}
 		else if (Input::IsKeyPressed(Key::W))
 		{
-			if (CanMoveInDirection(board, { 0, 1, 0 }, ts))
+			if (CanChangeDirection(board, Direction::Up, ts))
 			{
-				m_Direction = { 0, 1, 0 };
-				m_Angle = 90;
-				m_Invert = false;
+				SetDirection(Direction::Up);
 			}
 		}
 
 		UpdateMovement(ts, board);
-		UpdateAnimation(ts);
 	}
 
-	void Player::OnDraw()
-	{
-		Renderer::DrawQuadRotated(m_Position, { m_Invert ? -1 : 1, 1 }, m_Angle, m_Animation.GetCurrentAnimation());
-	}
-
-	void Player::UpdateAnimation(float ts)
-	{
-		m_Animation.Update(ts);
-	}
 
 	void Player::UpdateMovement(float ts, Board& board)
 	{
@@ -103,12 +86,4 @@ namespace Pacman {
 			m_CollectedCoins++;
 		}
 	}
-
-	bool Player::CanMoveInDirection(Board& board, const glm::vec3& direction, float ts)
-	{
-		bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
-		glm::vec3 newPosOffset = m_Position + (direction * ts) + direction;
-		return !board.IsWall(newPosOffset.x, newPosOffset.y) && (isInCenterOfTile || direction == -m_Direction);
-	}
-
 }

@@ -2,6 +2,8 @@
 
 #include "Application.h"
 
+#include <GLFW/glfw3.h>
+
 namespace Pacman {
 
 	Application* Application::s_Instance = nullptr;
@@ -35,6 +37,12 @@ namespace Pacman {
 			float time = (float)glfwGetTime();
 			float timestep = time - m_FrameLastTime;
 			m_FrameLastTime = time;
+
+			m_FpsCounter.Tick(timestep);
+
+			std::string name = "Pacman (FPS: " + std::to_string(m_FpsCounter.GetFPS()) + ")";
+
+			glfwSetWindowTitle(m_Window->GetNativeWindow(), name.c_str());
 
 			m_Game->OnUpdate(timestep);
 

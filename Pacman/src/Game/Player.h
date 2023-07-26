@@ -5,42 +5,27 @@
 
 #include <glm/glm.hpp>
 
+#include "Character.h"
+
 
 namespace Pacman {
 
 	class Board;
 
-	class Player
+	class Player : public Character
 	{
 	public:
 		Player();
 
-		void OnUpdate(float ts, Board& board);
-		void OnDraw();
-
-		void SetPosition(const glm::vec3& position) { m_Position = position; }
-
-		glm::vec3 GetPosition() const { return m_Position; }
-		glm::vec3 GetDirection() const { return m_Direction; }
+		void OnUpdate(float ts, Board& board) override;
 
 	private:
 
-		void UpdateAnimation(float ts);
 		void UpdateMovement(float ts, Board& board);
 
-		bool CanMoveInDirection(Board& board, const glm::vec3& direction, float ts);
-
 	private:
 
-		glm::vec3 m_Direction = { -1, 0, 0 };
-		glm::vec3 m_Position = { 0, 0, 0 };
-
 		uint16_t m_CollectedCoins = 0;
-
-		float m_Angle = 0;
-		bool m_Invert = true;
-
-		AnimationLoop m_Animation;
 	};
 
 }

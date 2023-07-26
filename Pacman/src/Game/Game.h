@@ -4,6 +4,7 @@
 
 #include "Renderer/Camera.h"
 #include "Player.h"
+#include "Ghost.h"
 #include "Board.h"
 
 namespace Pacman {
@@ -20,7 +21,6 @@ namespace Pacman {
 		void OnEnd();
 
 	private:
-		Player m_Player;
 		Board m_Board;
 		Camera m_Camera;
 	};

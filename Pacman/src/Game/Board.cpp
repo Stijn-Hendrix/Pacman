@@ -5,16 +5,15 @@
 
 namespace Pacman {
 
-	Board::Board(Player* player) : m_Player(player)
+	Board::Board() 
 	{
 		m_Coin = Texture::Create("assets/textures/coin.png");
-
-		//m_Tiles.resize(m_Width * m_Height);
 
 		const unsigned char _ = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(TileFlag::COIN);
 		const unsigned char W = static_cast<uint8_t>(TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
 		const unsigned char E = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
 
+		// Inverted along Y-Axis
 		m_Tiles = {
 			W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W,
 			W, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, W,
@@ -28,7 +27,7 @@ namespace Pacman {
 			W, _, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, _, W,
 			W, _, _, _, _, _, _, _, _, _, _, _, _, W, W, _, _, _, _, _, _, _, _, _, _, _, _, W,
 			W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W,
-			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
+			E, E, E, E, E, W, _, W, W, _, _, _, _, _, _, _, _, _, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
@@ -46,8 +45,8 @@ namespace Pacman {
 			W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W,
 		};
 
-		// TEMP, Prepare grid for drawing
 
+		// TEMP, Prepare grid for drawing
 		m_CoinTileSprites.resize(m_Width * m_Height);
 
 		const float halfWidth = m_Width / 2.0f;
@@ -138,18 +137,62 @@ namespace Pacman {
 			}
 		}
 
-		auto& startPos = CoordToPosition(13, 7);
-		startPos.x += 0.5f;
 
-		m_Player->SetPosition(startPos);
+		auto& playerStartPos = CoordToPosition(13, 7);
+		playerStartPos.x += 0.5f;
+
+		m_Player.SetPosition(playerStartPos);
+
+
+		auto redghostTexture = Texture::Create("assets/textures/redghost.png");
+
+		Ghost redGhost = { 
+			{
+				SubTexture::CreateFromCoords(redghostTexture, { 0, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 1, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 2, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 3, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 4, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 5, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 6, 0 }, { 16,16 }),
+				SubTexture::CreateFromCoords(redghostTexture, { 7, 0 }, { 16,16 }) 
+			}
+		};
+		redGhost.SetPosition(CoordToPosition(13, 16) + glm::vec3(0.5f, 0, 0));
+
+		auto greenghostTexture = Texture::Create("assets/textures/greenghost.png");
+
+		Ghost greenGhost = {
+		{
+			SubTexture::CreateFromCoords(greenghostTexture, { 0, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 1, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 2, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 3, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 4, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 5, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 6, 0 }, { 16,16 }),
+			SubTexture::CreateFromCoords(greenghostTexture, { 7, 0 }, { 16,16 })
+		}
+		};
+		greenGhost.SetPosition(CoordToPosition(14, 16) + glm::vec3(0.5f, 0, 0));
+
+		m_Ghosts = {
+			redGhost,
+			greenGhost
+		};
 	}
 
 	void Board::OnUpdate(float ts)
 	{
+		m_Player.OnUpdate(ts, *this);
 
+		for (uint8_t i = 0; i < m_Ghosts.size(); i++)
+		{
+			m_Ghosts[i].OnUpdate(ts, *this);
+		}
 	}
 
-	void Board::OnDraw()
+	void Board::OnDraw(float ts)
 	{
 		for (int i = 0; i < m_WallTileSprites.size(); i++)
 		{
@@ -163,7 +206,15 @@ namespace Pacman {
 			if (sprite.Occupied)
 				Renderer::DrawQuad(sprite.Position, sprite.Size, m_Coin, sprite.Color);
 		}
+
+		m_Player.OnDraw(ts);
+
+		for (uint8_t i = 0; i < m_Ghosts.size(); i++)
+		{
+			m_Ghosts[i].OnDraw(ts);
+		}
 	}
+
 	void Board::RemoveCoin(float x, float y)
 	{
 		auto& [xx, yy] = PositionToCoord(x, y);

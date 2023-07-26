@@ -3,6 +3,7 @@
 #include "ppch.h"
 
 #include "Window.h"
+#include "FpsCounter.h"
 #include "Game/Game.h"
 
 namespace Pacman {
@@ -19,6 +20,8 @@ namespace Pacman {
 	private:
 		std::unique_ptr<Window> m_Window;
 		std::unique_ptr<Game> m_Game;
+
+		FpsCounter m_FpsCounter;
 
 		bool m_Running = true;
 		float m_FrameLastTime = 0;
