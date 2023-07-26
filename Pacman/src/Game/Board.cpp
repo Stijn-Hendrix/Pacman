@@ -5,23 +5,15 @@
 
 namespace Pacman {
 
-// _ = Coin
-// W = Wall
-// E = Empty
-#define _ 0
-#define W 1
-#define E 2
-
-#define COIN 0
-#define WALL 1
-#define EMPTY 2
-
-
-	Board::Board()
+	Board::Board(Player* player) : m_Player(player)
 	{
 		m_Coin = Texture::Create("assets/textures/coin.png");
 
 		//m_Tiles.resize(m_Width * m_Height);
+
+		const unsigned char _ = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(TileFlag::COIN);
+		const unsigned char W = static_cast<uint8_t>(TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
+		const unsigned char E = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
 
 		m_Tiles = {
 			W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W, W,
@@ -56,6 +48,8 @@ namespace Pacman {
 
 		// TEMP, Prepare grid for drawing
 
+		m_CoinTileSprites.resize(m_Width * m_Height);
+
 		const float halfWidth = m_Width / 2.0f;
 		const float halfHeight = m_Height / 2.0f;
 
@@ -64,7 +58,7 @@ namespace Pacman {
 			for (uint32_t y = 0; y < m_Height; y++)
 			{
 				uint8_t type = m_Tiles[CoordToIndex(x, y)];
-				if (type == WALL)
+				if (type & WALL)
 				{
 					bool allNeighboursWall = true;
 
@@ -126,23 +120,29 @@ namespace Pacman {
 					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f, 0 };
 					tile.Size = { 0.8f, 0.8f };
 					tile.Color = glm::vec4(1, 1, 1, 1);
-					m_CoinTileSprites.push_back(tile);
+					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 				}
-				else if (type == COIN)
+				else if (type & COIN)
 				{
 					CoinSprite tile;
 					tile.Occupied = true;
 					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f, 0 };
 					tile.Size = { 0.8f, 0.8f };
 					tile.Color = glm::vec4(1, 1, 1, 1);
-					m_CoinTileSprites.push_back(tile);
+					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 				}
 			}
 		}
+
+		auto& startPos = PositionFromCoord(13, 7);
+		startPos.x += 0.5f;
+
+		m_Player->SetPosition(startPos);
 	}
 
 	void Board::OnUpdate(float ts)
 	{
+
 	}
 
 	void Board::OnDraw()
