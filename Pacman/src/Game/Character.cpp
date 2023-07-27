@@ -36,30 +36,12 @@ namespace Pacman {
 		float x = m_Position.x * 10.0f;
 		float y = m_Position.y * 10.0f;
 
-		switch (m_CurrentDirection)
-		{
-		case Direction::Up:
-			m_Position.x = glm::round(x) / 10.0f;
-			m_Position.y = glm::round(y) / 10.0f;
-			break;
-		case Direction::Down:
-			m_Position.x = glm::round(x) / 10.0f;
-			m_Position.y = glm::round(y) / 10.0f;
-			break;
-		case Direction::Right:
-			m_Position.x = glm::round(x) / 10.0f;
-			m_Position.y = glm::round(y) / 10.0f;
-			break;
-		case Direction::Left:
-			m_Position.x = glm::round(x) / 10.0f;
-			m_Position.y = glm::round(y) / 10.0f;
-			break;
-		}
+		m_Position.x = glm::round(x) / 10.0f;
+		m_Position.y = glm::round(y) / 10.0f;
 	}
 
 	bool Character::IsInCenterOfTile(Board& board)
 	{
 		return board.IsInCenterOfTile(m_Position.x, m_Position.y);
 	}
-
 }

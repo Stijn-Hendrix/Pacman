@@ -6,7 +6,7 @@
 namespace Pacman {
 	
 	Game::Game(uint32_t width, uint32_t height)
-		: m_Camera(width, height)
+		: m_Camera(width, height, {13.5f,13.5f,0})
 	{
 	}
 

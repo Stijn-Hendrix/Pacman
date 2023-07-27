@@ -85,6 +85,6 @@ namespace Pacman {
 		
 		DoCorrectPosition();
 
-		LOG(m_Position.x << " " << m_Position.y);
+		//LOG(m_Position.x << " " << m_Position.y);
 	}
 }

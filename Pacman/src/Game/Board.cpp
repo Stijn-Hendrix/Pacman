@@ -64,7 +64,7 @@ namespace Pacman {
 					if (CoordToIndex(x - 1, y) != -1 && m_Tiles[CoordToIndex(x - 1, y)] == _)
 					{
 						WallSprite tile;
-						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
+						tile.Position = { x, y };
 						tile.Size = { 0.1f, 0.5f };
 						m_WallTileSprites.push_back(tile);
 					}
@@ -72,7 +72,7 @@ namespace Pacman {
 					if (CoordToIndex(x + 1, y) != -1 && m_Tiles[CoordToIndex(x + 1, y)] == _)
 					{
 						WallSprite tile;
-						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
+						tile.Position = { x, y};
 						tile.Size = { 0.1f, 0.5f };
 						m_WallTileSprites.push_back(tile);
 					}
@@ -80,7 +80,7 @@ namespace Pacman {
 					if (CoordToIndex(x, y - 1) != -1 && m_Tiles[CoordToIndex(x, y - 1)] == _)
 					{
 						WallSprite tile;
-						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
+						tile.Position = { x, y };
 						tile.Size = { 0.5f ,  0.1f };
 						m_WallTileSprites.push_back(tile);
 					}
@@ -88,7 +88,7 @@ namespace Pacman {
 					if (CoordToIndex(x, y + 1) != -1 && m_Tiles[CoordToIndex(x, y + 1)] == _)
 					{
 						WallSprite tile;
-						tile.Position = { x - halfWidth + 0.5f, y - halfHeight + 0.5f };
+						tile.Position = { x, y };
 						tile.Size = { 0.5f ,  0.1f };
 						m_WallTileSprites.push_back(tile);
 					}
@@ -96,7 +96,7 @@ namespace Pacman {
 
 					CoinSprite tile;
 					tile.Occupied = false;
-					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f };
+					tile.Position = { x, y };
 					tile.Size = { 0.8f, 0.8f };
 					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 				}
@@ -104,7 +104,7 @@ namespace Pacman {
 				{
 					CoinSprite tile;
 					tile.Occupied = true;
-					tile.Position = { x - halfWidth + .5f, y - halfHeight + 0.5f };
+					tile.Position = { x, y };
 					tile.Size = { 0.8f, 0.8f };
 					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
 
@@ -114,17 +114,17 @@ namespace Pacman {
 		}
 
 
-		auto& playerStartPos = CoordToPosition(13, 7);
+		auto& playerStartPos = glm::vec2( 13, 7 );
 		playerStartPos.x += 0.5f;
 
 		m_Player.SetPosition(playerStartPos);
 
 		std::vector<glm::vec2> ghostStartPositions = {
-			CoordToPosition(13, 14),
-			CoordToPosition(14, 14),
-			CoordToPosition(15, 14),
-			CoordToPosition(13, 13),
-			CoordToPosition(14, 13)
+			 glm::vec2(13, 14),
+			 glm::vec2(14, 14),
+			 glm::vec2(15, 14),
+			 glm::vec2(13, 13),
+			 glm::vec2(14, 13)
 		};
 
 		std::vector<std::string> ghostTextures = {
@@ -135,7 +135,7 @@ namespace Pacman {
 			"assets/textures/blueghost.png"
 		};
 
-		for (int i = 0; i < ghostStartPositions.size(); i++)
+		for (int i = 0; i < 1; i++)
 		{
 			auto texture = Texture::Create(ghostTextures[i]);
 
@@ -202,5 +202,18 @@ namespace Pacman {
 		m_RemainingCoins--;
 
 		//LOG("Coins remaining: " << m_RemainingCoins);
+	}
+
+	bool Board::IsInCenterOfTile(float x, float y)
+	{
+		constexpr float tolerance = 1e-2;
+		auto& [c, d] = PositionToCoord(x, y);
+		return std::abs(x - c) < tolerance && std::abs(y - d) < tolerance;
+	}
+
+	bool Board::TileHasFlag(float x, float y, TileFlag flag)
+	{
+		auto& [xx, yy] = PositionToCoord(x, y);
+		return m_Tiles[CoordToIndex(xx, yy)] & flag;
 	}
 }

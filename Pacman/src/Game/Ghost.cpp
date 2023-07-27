@@ -61,6 +61,8 @@ namespace Pacman {
 	{
 		constexpr float movementSpeed = 5.0f;
 
+		LOG(m_Position.x << " " << m_Position.y);
+
 		if (IsInCenterOfTile(board))
 		{
 			DoCorrectPosition();

@@ -26,72 +26,27 @@ namespace Pacman {
 
 		void RemoveCoin(float x, float y);
 
-	public:
+		bool IsInCenterOfTile(float x, float y);
+
+		bool TileHasFlag(float x, float y, TileFlag flag);
 		
-		bool IsInCenterOfTile(float x, float y)
-		{
-			constexpr float tolerance = 1e-2;
-			auto& [a, b] = PositionToRelativeCoord(x, y);
-			auto& [c, d] = PositionToCoord(x, y);
-			return std::abs(a - c) < tolerance && std::abs(b - d) < tolerance;
-		}
-
-		bool TileHasFlag(float x, float y, TileFlag flag)
-		{
-			auto& [xx, yy] = PositionToCoord(x, y);
-			return m_Tiles[CoordToIndex(xx, yy)] & flag;
-		}
-
-		TileType GetTile(uint32_t index)
-		{
-			return m_Tiles[index];
-		}
-
-		TileType GetTile(uint32_t x, uint32_t y)
-		{
-			return m_Tiles[CoordToIndex(x, y)];
-		}
-
-
-		TileType GetTileFromPos(float x, float y)
-		{
-			auto& [xx, yy] = PositionToCoord(x, y);
-			return m_Tiles[CoordToIndex(xx, yy)];
-		}
-
-		glm::vec2 StickToCenterOfClosestTile(float x, float y)
-		{
-			auto [xx, yy] = PositionToCoord(x, y);
-			return CoordToPosition(xx, yy);
-		}
 
 	private:
 
 		int32_t CoordToIndex(uint32_t x, uint32_t y)
 		{
 			uint32_t i = y * m_Width + x;
+
 			if (i < 0 || i >= m_Tiles.size()) return -1;
+
 			return i;
 		}
 
-		glm::vec2 CoordToPosition(uint32_t x, uint32_t y)
-		{
-			float posX = x - (m_Width / 2.0f) + 0.5f;
-			float posY = y - (m_Height / 2.0f) + 0.5f;
-			return { posX, posY };
-		}
 
 		std::pair<int, int> PositionToCoord(float x, float y)
 		{
-			int posX = std::round(x + (m_Width / 2.0f) - 0.5f);
-			int posY = std::round(y + (m_Height / 2.0f) - 0.5f);
-			return { posX, posY };
-		}
-
-		std::pair<float, float> PositionToRelativeCoord(float x, float y)
-		{
-			float posX = x + (m_Width / 2.0f) - 0.5f;
-			float posY = y + (m_Height / 2.0f) - 0.5f;
+			int posX = std::round(x);
+			int posY = std::round(y);
 			return { posX, posY };
 		}
 
