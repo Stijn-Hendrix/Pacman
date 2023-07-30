@@ -10,7 +10,8 @@ namespace Pacman {
 	enum class GhostState
 	{
 		Wander = 0,
-		Scatter
+		Scatter,
+		Chase
 	};
 
 	class Ghost :  public Character
@@ -37,8 +38,9 @@ namespace Pacman {
 
 		void OnWander(float ts);
 		void OnScatter(float ts);
-		void FindNewDirection();
+		void OnChase(float ts);
 
+		void FindNewDirection();
 		void SetRandomDirection();
 
 	private:
@@ -46,6 +48,7 @@ namespace Pacman {
 		std::mt19937 rng;
 
 		float m_ScatterDistanceFromPlayer = 5.0f;
+		float m_ChaseDistanceFromPlayer = 6.0f;
 
 		GhostState m_CurrentState;
 	};

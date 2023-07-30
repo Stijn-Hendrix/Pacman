@@ -62,6 +62,9 @@ namespace Pacman {
 			case Pacman::GhostState::Scatter:
 				OnScatter(ts);
 				return;
+			case Pacman::GhostState::Chase:
+				OnChase(ts);
+				return;
 		}
 		
 	}
@@ -96,7 +99,7 @@ namespace Pacman {
 
 	void Ghost::OnWander(float ts)
 	{
-		constexpr float movementSpeed = 15.0f;
+		constexpr float movementSpeed = 3.5f;
 
 		if (m_Board->IsInCenterOfTile(m_Position))
 		{
@@ -122,15 +125,15 @@ namespace Pacman {
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
 		float distance = glm::distance(playerPosition, forward);
-		if (distance <= m_ScatterDistanceFromPlayer)
+		if (distance <= m_ChaseDistanceFromPlayer)
 		{
-			m_CurrentState = GhostState::Scatter;
+			m_CurrentState = GhostState::Chase;
 		}
 	}
 
 	void Ghost::OnScatter(float ts)
 	{
-		constexpr float movementSpeed = 4.0f;
+		constexpr float movementSpeed = 3.5f;
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
 
@@ -177,6 +180,64 @@ namespace Pacman {
 		if (distance > m_ScatterDistanceFromPlayer)
 		{
 			m_CurrentState = GhostState::Wander;
+		}
+	}
+
+	void Ghost::OnChase(float ts)
+	{
+		constexpr float movementSpeed = 3.5f;
+
+		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
+
+		float distance = glm::distance(playerPosition, m_Position);
+		if (distance > m_ChaseDistanceFromPlayer)
+		{
+			m_CurrentState = GhostState::Wander;
+		}
+
+		Direction nextDirection = m_CurrentDirection;
+
+		if (m_Board->IsInCenterOfTile(m_Position))
+		{
+			float minDistance = 1000000;
+
+			for (auto& edir : Utils::GetDirections())
+			{
+				glm::vec2 dir = GetFromDirection(edir);
+				glm::vec2 forward = m_Position + dir * 0.51f;
+
+				bool colision = m_Board->TileHasFlag(forward, WALL);
+				if (!colision)
+				{
+					float distance = glm::distance(playerPosition, forward);
+					if (distance < minDistance)
+					{
+						nextDirection = edir;
+						minDistance = distance;
+					}
+				}
+			}
+		}
+
+		
+
+		if (m_CurrentDirection != nextDirection)
+		{
+			SetDirection(nextDirection);
+		}
+
+		glm::vec2 forward = m_Position + m_Direction * 0.51f;
+
+		bool colision = m_Board->TileHasFlag(forward, WALL);
+		if (!colision)
+		{
+			m_Position += m_Direction * movementSpeed * ts;
+		}
+		else
+		{
+			auto& [x, y] = m_Board->PositionToCoord(m_Position);
+			m_Position.x = x;
+			m_Position.y = y;
 		}
 	}
 }
