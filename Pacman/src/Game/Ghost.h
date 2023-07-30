@@ -16,24 +16,26 @@ namespace Pacman {
 	{
 	public:
 
-		Ghost() : Character(), rng()
+		Ghost(Board* board) : Character(board), m_CurrentState(GhostState::LeavePen), rng()
 		{
 			SetCanRotate(false);
 		}
 
-		Ghost(const AnimationLoop& animationLoop) 
-			: Character(animationLoop), m_CurrentState(GhostState::LeavePen), rng()
+		Ghost(const AnimationLoop& animationLoop, Board* board)
+			: Character(animationLoop, board), m_CurrentState(GhostState::LeavePen), rng()
 		{
 			m_Animation.SetSpeed(4);
 			SetCanRotate(false);
 		}
 
-		void OnUpdate(float ts, Board& board) override;
+		void OnUpdate(float ts) override;
 
 	private:
 
-		void OnWander(float ts, Board& board);
-		void OnLeavePen(float ts, Board& board);
+		void OnWander(float ts);
+		void OnLeavePen(float ts);
+
+		void FindNewDirection();
 
 	private:
 

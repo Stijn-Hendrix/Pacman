@@ -15,13 +15,13 @@ namespace Pacman {
 	class Player : public Character
 	{
 	public:
-		Player();
+		Player(Board* board);
 
-		void OnUpdate(float ts, Board& board) override;
+		void OnUpdate(float ts) override;
 
 	private:
 
-		void UpdateMovement(float ts, Board& board);
+		void UpdateMovement(float ts);
 
 	private:
 

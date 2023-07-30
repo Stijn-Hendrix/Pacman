@@ -6,6 +6,7 @@
 namespace Pacman {
 
 	Board::Board() 
+		: m_Player(this)
 	{
 		m_Coin = Texture::Create("assets/textures/coin.png");
 
@@ -93,6 +94,15 @@ namespace Pacman {
 						m_WallTileSprites.push_back(tile);
 					}
 				
+					/*
+					if (m_Tiles[CoordToIndex(x, y)] == W)
+					{
+						WallSprite tile;
+						tile.Position = { x, y };
+						tile.Size = { 1.0f, 1.0f };
+						m_WallTileSprites.push_back(tile);
+					}
+					*/
 
 					CoinSprite tile;
 					tile.Occupied = false;
@@ -135,7 +145,7 @@ namespace Pacman {
 			"assets/textures/blueghost.png"
 		};
 
-		for (int i = 0; i < 1; i++)
+		for (int i = 0; i < 5; i++)
 		{
 			auto texture = Texture::Create(ghostTextures[i]);
 
@@ -149,7 +159,8 @@ namespace Pacman {
 					SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 })
-				}
+				},
+				this
 			};
 
 			ghost.SetPosition(ghostStartPositions[i]);
@@ -159,11 +170,11 @@ namespace Pacman {
 
 	void Board::OnUpdate(float ts)
 	{
-		m_Player.OnUpdate(ts, *this);
+		m_Player.OnUpdate(ts);
 
 		for (uint8_t i = 0; i < m_Ghosts.size(); i++)
 		{
-			m_Ghosts[i].OnUpdate(ts, *this);
+			m_Ghosts[i].OnUpdate(ts);
 		}
 	}
 
@@ -190,9 +201,9 @@ namespace Pacman {
 		}
 	}
 
-	void Board::RemoveCoin(float x, float y)
+	void Board::RemoveCoin(const glm::vec2& position)
 	{
-		auto& [xx, yy] = PositionToCoord(x, y);
+		auto& [xx, yy] = PositionToCoord(position);
 		uint32_t index = CoordToIndex(xx, yy);
 
 		TileType tile = m_Tiles[index];
@@ -200,20 +211,36 @@ namespace Pacman {
 		m_Tiles[index] = m_Tiles[index] & ~COIN;
 		m_CoinTileSprites[index].Occupied = false;
 		m_RemainingCoins--;
-
-		//LOG("Coins remaining: " << m_RemainingCoins);
 	}
 
-	bool Board::IsInCenterOfTile(float x, float y)
+	bool Board::IsInCenterOfTile(const glm::vec2& position)
 	{
 		constexpr float tolerance = 1e-2;
-		auto& [c, d] = PositionToCoord(x, y);
-		return std::abs(x - c) < tolerance && std::abs(y - d) < tolerance;
+		auto& [c, d] = PositionToCoord(position);
+		return std::abs(position.x - c) < tolerance && std::abs(position.y - d) < tolerance;
 	}
 
-	bool Board::TileHasFlag(float x, float y, TileFlag flag)
+	bool Board::TileHasFlag(const glm::vec2& position, TileFlag flag)
 	{
-		auto& [xx, yy] = PositionToCoord(x, y);
+		auto& [xx, yy] = PositionToCoord(position);
 		return m_Tiles[CoordToIndex(xx, yy)] & flag;
+	}
+
+	std::pair<int, int> Board::PositionToCoord(const glm::vec2& position)
+	{
+		// (x,y) is the center of a tile. This means that we must offset by 0.5f
+		// ex. (0,0) -> (-0.5f, _) is still tile 0.
+		int posX = std::floor(position.x + 0.5f);
+		int posY = std::floor(position.y + 0.5f);
+		return { posX, posY };
+	}
+
+	int32_t Board::CoordToIndex(uint32_t x, uint32_t y)
+	{
+		uint32_t i = y * m_Width + x;
+
+		if (i < 0 || i >= m_Tiles.size()) return -1;
+
+		return i;
 	}
 }

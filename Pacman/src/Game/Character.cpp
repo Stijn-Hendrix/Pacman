@@ -10,38 +10,67 @@ namespace Pacman {
 	{
 		m_Animation.Update(ts);
 
-		Renderer::DrawQuadRotated(glm::vec3(m_Position, 0), { m_Invert ? -1 : 1, 1 }, m_Angle, m_Animation.GetCurrentAnimation());
+		Renderer::DrawQuadRotated(glm::vec3(m_Position, 0), { m_Invert ? -1 : 1, 1 }, 
+			m_Angle, m_Animation.GetCurrentAnimation());
 	}
 
-	bool Character::CanMoveInDirection(Board& board, Direction direction, float ts)
+	void Character::SetPosition(const glm::vec2& position)
 	{
+		m_Position = position;
+	}
 
+	void Character::SetDirection(Direction direction)
+	{
+		m_CurrentDirection = direction;
+		switch (direction)
+		{
+		case Direction::Up:
+			m_Direction = { 0, 1 };
+			if (m_Rotation)
+			{
+				m_Angle = 90;
+				m_Invert = false;
+			}
+			break;
+		case Direction::Down:
+			m_Direction = { 0, -1 };
+			if (m_Rotation)
+			{
+				m_Angle = -90;
+				m_Invert = false;
+			}
+			break;
+		case Direction::Right:
+			m_Direction = { 1, 0 };
+			if (m_Rotation)
+			{
+				m_Angle = 0;
+				m_Invert = false;
+			}
+			break;
+		case Direction::Left:
+			m_Direction = { -1, 0 };
+			if (m_Rotation)
+			{
+				m_Angle = 0;
+				m_Invert = true;;
+			}
+			break;
+		}
+	}
+
+	bool Character::CanMoveInDirection(Direction direction)
+	{
 		auto& dir = GetFromDirection(direction);
-		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
-		return !board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL);
+		glm::vec2 newPosOffset = m_Position + dir * 0.6f;
+		return !m_Board->TileHasFlag(newPosOffset, WALL);
 	}
 
-	bool Character::CanChangeDirection(Board& board, Direction direction, float ts)
+	bool Character::CanChangeDirection(Direction direction)
 	{
 		auto& dir = GetFromDirection(direction);
-		bool isInCenterOfTile = board.IsInCenterOfTile(m_Position.x, m_Position.y);
-		glm::vec2 newPosOffset = m_Position + (dir * ts) + dir;
-		return !board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL) && (isInCenterOfTile || dir == -m_Direction);
-	}
-
-	// Shifts the character position to stick to the closest tile, throws away
-	// small floating points
-	void Character::DoCorrectPosition()
-	{
-		float x = m_Position.x * 10.0f;
-		float y = m_Position.y * 10.0f;
-
-		m_Position.x = glm::round(x) / 10.0f;
-		m_Position.y = glm::round(y) / 10.0f;
-	}
-
-	bool Character::IsInCenterOfTile(Board& board)
-	{
-		return board.IsInCenterOfTile(m_Position.x, m_Position.y);
+		bool isInCenterOfTile = m_Board->IsInCenterOfTile(m_Position);
+		glm::vec2 newPosOffset = m_Position + dir * 0.6f;
+		return !m_Board->TileHasFlag(newPosOffset, WALL) && (isInCenterOfTile || dir == -m_Direction);
 	}
 }

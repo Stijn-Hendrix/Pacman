@@ -6,9 +6,8 @@
 
 #include <glm/glm.hpp>
 
-namespace Pacman {
 
-	class Board;
+namespace Pacman {
 
 	enum class Direction
 	{
@@ -18,70 +17,34 @@ namespace Pacman {
 		Left
 	};
 
-
+	class Board;
 	
-
 	class Character
 	{
 	public:
-		Character()
+		Character(Board* board) : m_Board(board)
 		{
 			SetDirection(Direction::Left);
 		}
 
-		Character(const AnimationLoop& animation) : m_Animation(animation)
+		Character(const AnimationLoop& animation, Board* board) : m_Animation(animation), m_Board(board)
 		{
 			SetDirection(Direction::Left);
 		}
 
-		void virtual OnUpdate(float ts, Board& board) = 0;
+		void virtual OnUpdate(float ts) = 0;
 		void OnDraw(float ts);
 
-		void SetPosition(const glm::vec2& position) { m_Position = position; }
+		void SetPosition(const glm::vec2& position);
+
 		void SetCanRotate(bool value) { m_Rotation = false; m_Angle = 0; m_Invert = false; }
 
 		glm::vec2 GetPosition() const { return m_Position; }
 		glm::vec2 GetDirection() const { return m_Direction; }
 
-		void SetDirection(Direction direction)
-		{
-			m_CurrentDirection = direction;
-			switch (direction)
-			{
-				case Direction::Up: 
-					m_Direction = { 0, 1 };
-					if (m_Rotation)
-					{
-						m_Angle = 90;
-						m_Invert = false;
-					}
-					break;
-				case Direction::Down: 
-					m_Direction = { 0, -1 };
-					if (m_Rotation)
-					{
-						m_Angle = -90;
-						m_Invert = false;
-					}
-					break;
-				case Direction::Right: 
-					m_Direction = { 1, 0 };
-					if (m_Rotation)
-					{
-						m_Angle = 0;
-						m_Invert = false;
-					}
-					break;
-				case Direction::Left:
-					m_Direction = { -1, 0 };
-					if (m_Rotation)
-					{
-						m_Angle = 0;
-						m_Invert = true;;
-					}
-					break;
-			}
-		}
+		void SetDirection(Direction direction);
+
+	protected:
 
 		glm::vec2 GetFromDirection(Direction direction)
 		{
@@ -93,14 +56,9 @@ namespace Pacman {
 			case Direction::Left:	return { -1.0f, 0.0f };
 			}
 		}
-
-	protected:
 		
-		bool CanMoveInDirection(Board& board, Direction direction, float ts);
-		bool CanChangeDirection(Board& board, Direction direction, float ts);
-		bool IsInCenterOfTile(Board& board);
-
-		void DoCorrectPosition();
+		bool CanMoveInDirection(Direction direction);
+		bool CanChangeDirection(Direction direction);
 
 	protected:
 
@@ -111,6 +69,8 @@ namespace Pacman {
 		bool m_Rotation = true;
 		float m_Angle = 0;
 		bool m_Invert = true;
+
+		Board* m_Board;
 
 		AnimationLoop m_Animation;
 	};

@@ -43,74 +43,83 @@ namespace Pacman {
 		}
 	}
 
-	void Ghost::OnUpdate(float ts, Board& board)
+	void Ghost::OnUpdate(float ts)
 	{
 		switch (m_CurrentState)
 		{
 			case Pacman::GhostState::Wander:  
-				OnWander(ts, board); 
+				OnWander(ts); 
 				return;
 			case Pacman::GhostState::LeavePen:
-				OnLeavePen(ts, board);
+				OnLeavePen(ts);
 				return;
 		}
 		
 	}
 
-	void Ghost::OnWander(float ts, Board& board)
+	void Ghost::FindNewDirection()
 	{
-		constexpr float movementSpeed = 5.0f;
-
-		LOG(m_Position.x << " " << m_Position.y);
-
-		if (IsInCenterOfTile(board))
-		{
-			DoCorrectPosition();
-
-			// higher bias to continue in the current direction
-			std::vector<Direction> allDirections = { 
-				Utils::Previous(m_CurrentDirection), 
+		std::vector<Direction> allDirections = {
+				Utils::Previous(m_CurrentDirection),
 				m_CurrentDirection,
-				m_CurrentDirection, 
+				m_CurrentDirection,
 				Utils::Next(m_CurrentDirection)
-			};
-			std::shuffle(allDirections.begin(), allDirections.end(), rng);
+		};
+		std::shuffle(allDirections.begin(), allDirections.end(), rng);
 
-			for (int i = 0; i < allDirections.size(); i++)
+		for (int i = 0; i < allDirections.size(); i++)
+		{
+			if (CanMoveInDirection(allDirections[i]))
 			{
-				if (CanMoveInDirection(board, allDirections[i], ts))
-				{
-					SetDirection(allDirections[i]);
-					SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
-					return;
-				}
+				SetDirection(allDirections[i]);
+				return;
 			}
+		}
+		SetDirection(Utils::Opposite(m_CurrentDirection));
+	}
 
-			if (CanMoveInDirection(board, Utils::Opposite(m_CurrentDirection), ts))
-			{
-				SetDirection(Utils::Opposite(m_CurrentDirection));
-				SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
-			}
+	void Ghost::OnWander(float ts)
+	{
+		constexpr float movementSpeed = 3.0f;
+
+		if (m_Board->IsInCenterOfTile(m_Position))
+		{
+			FindNewDirection();
+			auto& [x, y] = m_Board->PositionToCoord(m_Position);
+			m_Position.x = x;
+			m_Position.y = y;
+		}
+
+		glm::vec2 forward = m_Position + m_Direction * 0.51f;
+
+		bool colision = m_Board->TileHasFlag(forward, WALL);
+		if (!colision)
+		{
+			m_Position += m_Direction * movementSpeed * ts;
 		}
 		else
 		{
-			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
+			auto& [x, y] = m_Board->PositionToCoord(m_Position);
+			m_Position.x = x;
+			m_Position.y = y;
 		}
-		
 	}
 
-	void Ghost::OnLeavePen(float ts, Board& board)
+	void Ghost::OnLeavePen(float ts)
 	{
 		constexpr float movementSpeed = 1.0f;
 
 		SetDirection(Direction::Up);
-		if (board.TileHasFlag(m_Position.x, m_Position.y, WALL) || !IsInCenterOfTile(board))
+		if (m_Board->TileHasFlag(m_Position, WALL) || !m_Board->IsInCenterOfTile(m_Position))
 		{
 			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
 		}
 		else
 		{
 			m_CurrentState = GhostState::Wander;
+			SetDirection(Direction::Left);
 		}
 	}
+
+	
 }

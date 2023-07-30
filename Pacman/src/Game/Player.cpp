@@ -8,8 +8,8 @@
 
 namespace Pacman {
 
-	Player::Player()
-		: Character()
+	Player::Player(Board* board)
+		: Character(board)
 	{
 		auto texture = Texture::Create("assets/textures/pacman.png");
 
@@ -27,64 +27,56 @@ namespace Pacman {
 		m_Animation.SetSpeed(4);
 	}
 
-	void Player::OnUpdate(float ts, Board& board)
+	void Player::OnUpdate(float ts)
 	{
 
 		if (Input::IsKeyPressed(Key::A))
 		{
-			if (CanChangeDirection(board, Direction::Left, ts))
-			{
+			if (CanChangeDirection(Direction::Left))
 				SetDirection(Direction::Left);
-			}
 		}
 		else if (Input::IsKeyPressed(Key::D))
 		{
-			if (CanChangeDirection(board, Direction::Right, ts))
-			{
+			if (CanChangeDirection(Direction::Right))
 				SetDirection(Direction::Right);
-			}
 		}
 		else if (Input::IsKeyPressed(Key::S))
 		{
-			if (CanChangeDirection(board, Direction::Down, ts))
-			{
+			if (CanChangeDirection(Direction::Down))
 				SetDirection(Direction::Down);
-			}
 		}
 		else if (Input::IsKeyPressed(Key::W))
 		{
-			if (CanChangeDirection(board, Direction::Up, ts))
-			{
+			if (CanChangeDirection(Direction::Up))
 				SetDirection(Direction::Up);
-			}
 		}
 
-		UpdateMovement(ts, board);
+		UpdateMovement(ts);
 	}
 
 
-	void Player::UpdateMovement(float ts, Board& board)
+	void Player::UpdateMovement(float ts)
 	{
 		constexpr float movementSpeed = 5.0f;
 
-		auto& playerPosition = m_Position;
-		auto& playerDirection = m_Direction;
-		glm::vec2 newPos = playerPosition + (playerDirection * ts) * movementSpeed;
-		glm::vec2 newPosOffset = newPos + playerDirection / 2.0f;
+		glm::vec2 forward = m_Position + m_Direction * 0.51f;
 
-		if (!board.TileHasFlag(newPosOffset.x, newPosOffset.y, WALL))
-		{
-			SetPosition(newPos);
-		}
-	
-		if (board.TileHasFlag(m_Position.x, m_Position.y, COIN))
-		{
-			board.RemoveCoin(m_Position.x, m_Position.y);
-			m_CollectedCoins++;
-		}
-		
-		DoCorrectPosition();
+;		bool colision = m_Board->TileHasFlag(forward, WALL);
 
-		//LOG(m_Position.x << " " << m_Position.y);
+		if (!colision) {
+			m_Position += m_Direction * movementSpeed * ts;
+
+			if (m_Board->TileHasFlag(m_Position, COIN))
+			{
+				m_Board->RemoveCoin(m_Position);
+				m_CollectedCoins++;
+			}
+		}
+		else
+		{
+			auto& [x, y] = m_Board->PositionToCoord(m_Position);
+			m_Position.x = x;
+			m_Position.y = y;
+		}
 	}
 }

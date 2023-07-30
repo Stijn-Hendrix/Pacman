@@ -24,31 +24,18 @@ namespace Pacman {
 		void OnUpdate(float ts);
 		void OnDraw(float ts);
 
-		void RemoveCoin(float x, float y);
+		void RemoveCoin(const glm::vec2& position);
 
-		bool IsInCenterOfTile(float x, float y);
+		bool IsInCenterOfTile(const glm::vec2& position);
 
-		bool TileHasFlag(float x, float y, TileFlag flag);
+		bool TileHasFlag(const glm::vec2& position, TileFlag flag);
+		
+		std::pair<int, int> PositionToCoord(const glm::vec2& position);
 		
 
 	private:
 
-		int32_t CoordToIndex(uint32_t x, uint32_t y)
-		{
-			uint32_t i = y * m_Width + x;
-
-			if (i < 0 || i >= m_Tiles.size()) return -1;
-
-			return i;
-		}
-
-
-		std::pair<int, int> PositionToCoord(float x, float y)
-		{
-			int posX = std::round(x);
-			int posY = std::round(y);
-			return { posX, posY };
-		}
+		int32_t CoordToIndex(uint32_t x, uint32_t y);
 
 	private:
 
