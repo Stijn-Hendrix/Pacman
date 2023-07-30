@@ -30,8 +30,8 @@ namespace Pacman {
 			W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W,
 			E, E, E, E, E, W, _, W, W, _, _, _, _, _, _, _, _, _, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
-			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
-			E, E, E, E, E, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, E, E, E, E, E,
+			E, E, E, E, E, W, _, W, W, _, W, _, _, _, _, _, _, W, _, W, W, _, W, E, E, E, E, E,
+			E, E, E, E, E, W, _, W, W, _, W, W, W, _, _, W, W, W, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, _, _, _, _, _, _, _, _, _, _, W, W, _, W, E, E, E, E, E,
 			E, E, E, E, E, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, E, E, E, E, E,
 			W, W, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, W, W,
@@ -133,19 +133,17 @@ namespace Pacman {
 			 glm::vec2(13, 14),
 			 glm::vec2(14, 14),
 			 glm::vec2(15, 14),
-			 glm::vec2(13, 13),
-			 glm::vec2(14, 13)
+			 glm::vec2(14, 15),
 		};
 
 		std::vector<std::string> ghostTextures = {
 			"assets/textures/redghost.png",
 			"assets/textures/greenghost.png",
 			"assets/textures/orangeghost.png",
-			"assets/textures/yellowghost.png",
 			"assets/textures/blueghost.png"
 		};
 
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			auto texture = Texture::Create(ghostTextures[i]);
 

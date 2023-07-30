@@ -57,7 +57,7 @@ namespace Pacman {
 
 	void Player::UpdateMovement(float ts)
 	{
-		constexpr float movementSpeed = 5.0f;
+		constexpr float movementSpeed = 4.0f;
 
 		glm::vec2 forward = m_Position + m_Direction * 0.51f;
 

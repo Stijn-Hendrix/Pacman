@@ -5,7 +5,6 @@
 
 #include "Board.h"
 
-#include <random>
 
 namespace Pacman {
 
@@ -41,6 +40,16 @@ namespace Pacman {
 			}
 			return (Direction)((int)(direction)+2);
 		}
+
+		std::vector<Direction> GetDirections()
+		{
+			return { 
+				Direction::Up,
+				Direction::Right,
+				Direction::Down,
+				Direction::Left 
+			};
+		}
 	}
 
 	void Ghost::OnUpdate(float ts)
@@ -50,8 +59,8 @@ namespace Pacman {
 			case Pacman::GhostState::Wander:  
 				OnWander(ts); 
 				return;
-			case Pacman::GhostState::LeavePen:
-				OnLeavePen(ts);
+			case Pacman::GhostState::Scatter:
+				OnScatter(ts);
 				return;
 		}
 		
@@ -78,9 +87,16 @@ namespace Pacman {
 		SetDirection(Utils::Opposite(m_CurrentDirection));
 	}
 
+	void Ghost::SetRandomDirection()
+	{
+		auto directions = Utils::GetDirections();
+		std::shuffle(directions.begin(), directions.end(), rng);
+		SetDirection(directions[0]);
+	}
+
 	void Ghost::OnWander(float ts)
 	{
-		constexpr float movementSpeed = 3.0f;
+		constexpr float movementSpeed = 15.0f;
 
 		if (m_Board->IsInCenterOfTile(m_Position))
 		{
@@ -103,23 +119,64 @@ namespace Pacman {
 			m_Position.x = x;
 			m_Position.y = y;
 		}
+
+		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
+		float distance = glm::distance(playerPosition, forward);
+		if (distance <= m_ScatterDistanceFromPlayer)
+		{
+			m_CurrentState = GhostState::Scatter;
+		}
 	}
 
-	void Ghost::OnLeavePen(float ts)
+	void Ghost::OnScatter(float ts)
 	{
-		constexpr float movementSpeed = 1.0f;
+		constexpr float movementSpeed = 4.0f;
 
-		SetDirection(Direction::Up);
-		if (m_Board->TileHasFlag(m_Position, WALL) || !m_Board->IsInCenterOfTile(m_Position))
+		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
+
+		float maxDistance = -1000000;
+		Direction nextDirection = m_CurrentDirection;
+
+		for (auto& edir : Utils::GetDirections())
 		{
-			SetPosition(m_Position + (m_Direction * ts) * movementSpeed);
+			glm::vec2 dir = GetFromDirection(edir);
+			glm::vec2 forward = m_Position + dir * 0.51f;
+
+			bool colision = m_Board->TileHasFlag(forward, WALL);
+			if (!colision)
+			{
+				float distance = glm::distance(playerPosition, forward);
+				if (distance > maxDistance)
+				{
+					nextDirection = edir;
+					maxDistance = distance;
+				}
+			}
+		}
+
+		if (m_CurrentDirection != nextDirection)
+		{
+			SetDirection(nextDirection);
+		}
+
+		glm::vec2 forward = m_Position + m_Direction * 0.51f;
+
+		bool colision = m_Board->TileHasFlag(forward, WALL);
+		if (!colision)
+		{
+			m_Position += m_Direction * movementSpeed * ts;
 		}
 		else
 		{
+			auto& [x, y] = m_Board->PositionToCoord(m_Position);
+			m_Position.x = x;
+			m_Position.y = y;
+		}
+
+		float distance = glm::distance(playerPosition, forward);
+		if (distance > m_ScatterDistanceFromPlayer)
+		{
 			m_CurrentState = GhostState::Wander;
-			SetDirection(Direction::Left);
 		}
 	}
-
-	
 }

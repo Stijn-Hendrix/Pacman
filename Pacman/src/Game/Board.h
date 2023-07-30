@@ -31,6 +31,8 @@ namespace Pacman {
 		bool TileHasFlag(const glm::vec2& position, TileFlag flag);
 		
 		std::pair<int, int> PositionToCoord(const glm::vec2& position);
+
+		const Player& GetPlayer() const { return m_Player; }
 		
 
 	private:

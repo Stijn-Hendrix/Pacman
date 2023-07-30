@@ -6,6 +6,7 @@
 #include <glm/glm.hpp>
 
 #include "Character.h"
+#include <random>
 
 
 namespace Pacman {
