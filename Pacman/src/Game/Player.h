@@ -19,7 +19,6 @@ namespace Pacman {
 		Player(Board* board);
 
 		void OnUpdate(float ts) override;
-
 	private:
 
 		void UpdateMovement(float ts);

@@ -116,7 +116,6 @@ namespace Pacman {
 
 
 		auto& playerStartPos = glm::vec2( 13, 7 );
-		playerStartPos.x += 0.5f;
 
 		m_Player.SetPosition(playerStartPos);
 
@@ -184,6 +183,26 @@ namespace Pacman {
 		{
 			m_Ghosts[i].OnUpdate(ts);
 		}
+
+		for (auto& it = m_Ghosts.begin(); it != m_Ghosts.end();)
+		{
+			if (glm::distance(m_Player.GetPosition(), it->GetPosition()) < 0.5f)
+			{
+				if (IsPowerUpActive())
+				{
+					it = m_Ghosts.erase(it);
+				}
+				else
+				{
+					m_GameOver = true;
+					return;
+				}
+			}
+			else
+			{
+				++it;
+			}
+		}
 	}
 
 	void Board::OnDraw(float ts)
@@ -243,7 +262,7 @@ namespace Pacman {
 	{
 		auto coord = PositionToCoord(position);
 
-		for (Ghost ghost : m_Ghosts)
+		for (Ghost& ghost : m_Ghosts)
 		{
 			auto ghostCoord = PositionToCoord(ghost.GetPosition());
 			if (ghostCoord == coord)

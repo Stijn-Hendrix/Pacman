@@ -44,6 +44,8 @@ namespace Pacman {
 
 		void ActivatePowerUp(float seconds) { m_PowerUpActive = seconds; }
 
+		bool IsGameOver() { return m_GameOver; }
+
 	private:
 
 		int32_t CoordToIndex(uint32_t x, uint32_t y);
@@ -52,13 +54,13 @@ namespace Pacman {
 
 	private:
 
-
-
 		struct WallSprite
 		{
 			glm::vec2 Position;
 			glm::vec2 Size;
 		};
+
+		bool m_GameOver = false;
 
 		const uint16_t m_Width = 28;
 		const uint16_t m_Height = 28;

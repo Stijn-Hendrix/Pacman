@@ -109,7 +109,7 @@ namespace Pacman {
 			return;
 		}
 
-		constexpr float movementSpeed = 3.5f;
+		constexpr float movementSpeed = 3.8f;
 
 		if (m_Board->IsInCenterOfTile(m_Position))
 		{
@@ -156,7 +156,7 @@ namespace Pacman {
 
 	void Ghost::OnScatter(float ts)
 	{
-		constexpr float movementSpeed = 3.5f;
+		constexpr float movementSpeed = 3.8f;
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
 
@@ -231,7 +231,7 @@ namespace Pacman {
 			return;
 		}
 
-		constexpr float movementSpeed = 3.5f;
+		constexpr float movementSpeed = 3.8f;
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
 

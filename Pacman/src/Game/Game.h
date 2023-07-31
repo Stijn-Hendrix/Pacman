@@ -22,7 +22,7 @@ namespace Pacman {
 		void OnEnd();
 
 	private:
-		Board m_Board;
+		std::shared_ptr<Board> m_Board;
 		Camera m_Camera;
 	};
 

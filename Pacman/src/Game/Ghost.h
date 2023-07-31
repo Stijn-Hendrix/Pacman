@@ -44,7 +44,6 @@ namespace Pacman {
 
 		std::mt19937 rng;
 
-		float m_ScatterDistanceFromPlayer = 5.0f;
 		float m_ChaseDistanceFromPlayer = 6.0f;
 
 		GhostState m_CurrentState;
