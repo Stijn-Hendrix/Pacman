@@ -8,6 +8,9 @@
 
 namespace Pacman {
 
+#define ANIM_REGULAR 0
+#define ANIM_FRIGHTENED 1
+
 	namespace Utils {
 
 		Direction Next(Direction direction)
@@ -59,8 +62,8 @@ namespace Pacman {
 			case Pacman::GhostState::Wander:  
 				OnWander(ts); 
 				return;
-			case Pacman::GhostState::Scatter:
-				OnScatter(ts);
+			case Pacman::GhostState::Frightened:
+				OnFrightened(ts);
 				return;
 			case Pacman::GhostState::Chase:
 				OnChase(ts);
@@ -99,6 +102,13 @@ namespace Pacman {
 
 	void Ghost::OnWander(float ts)
 	{
+		if (m_Board->IsPowerUpActive())
+		{
+			m_CurrentState = GhostState::Frightened;
+			m_Animation.TransitionTo(ANIM_FRIGHTENED);
+			return;
+		}
+
 		constexpr float movementSpeed = 3.5f;
 
 		if (m_Board->IsInCenterOfTile(m_Position))
@@ -131,23 +141,54 @@ namespace Pacman {
 		}
 	}
 
+	void Ghost::OnFrightened(float ts)
+	{
+		if (m_Board->IsPowerUpActive())
+		{
+			OnScatter(ts);
+		}
+		else
+		{
+			m_CurrentState = GhostState::Wander;
+			m_Animation.TransitionTo(ANIM_REGULAR);
+		}
+	}
+
 	void Ghost::OnScatter(float ts)
 	{
 		constexpr float movementSpeed = 3.5f;
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
 
-		float maxDistance = -1000000;
-		Direction nextDirection = m_CurrentDirection;
-
-		for (auto& edir : Utils::GetDirections())
+		if (m_Board->IsInCenterOfTile(m_Position) || glm::distance(playerPosition, m_Position) <= 3.0f)
 		{
-			glm::vec2 dir = GetFromDirection(edir);
-			glm::vec2 forward = m_Position + dir * 0.51f;
+			std::vector<Direction> availableDirections;
 
-			bool colision = m_Board->TileHasFlag(forward, WALL);
-			if (!colision)
+			for (auto& edir : Utils::GetDirections())
 			{
+				glm::vec2 dir = GetFromDirection(edir);
+				glm::vec2 forward = m_Position + dir * 0.51f;
+
+				bool colision = m_Board->TileHasFlag(forward, WALL);
+				if (!colision)
+				{
+					availableDirections.push_back(edir);
+				}
+			}
+
+			float maxDistance = -1000000;
+			Direction nextDirection = m_CurrentDirection;
+
+			for (auto& edir : availableDirections)
+			{
+				glm::vec2 dir = GetFromDirection(edir);
+				glm::vec2 forward = m_Position + dir * 0.51f;
+
+				if (edir == Utils::Opposite(m_CurrentDirection) && availableDirections.size() > 1)
+				{
+					continue;
+				}
+
 				float distance = glm::distance(playerPosition, forward);
 				if (distance > maxDistance)
 				{
@@ -155,12 +196,16 @@ namespace Pacman {
 					maxDistance = distance;
 				}
 			}
-		}
 
-		if (m_CurrentDirection != nextDirection)
-		{
-			SetDirection(nextDirection);
+			if (m_CurrentDirection != nextDirection)
+			{
+				SetDirection(nextDirection);
+				auto& [x, y] = m_Board->PositionToCoord(m_Position);
+				m_Position.x = x;
+				m_Position.y = y;
+			}
 		}
+		
 
 		glm::vec2 forward = m_Position + m_Direction * 0.51f;
 
@@ -175,16 +220,17 @@ namespace Pacman {
 			m_Position.x = x;
 			m_Position.y = y;
 		}
-
-		float distance = glm::distance(playerPosition, forward);
-		if (distance > m_ScatterDistanceFromPlayer)
-		{
-			m_CurrentState = GhostState::Wander;
-		}
 	}
 
 	void Ghost::OnChase(float ts)
 	{
+		if (m_Board->IsPowerUpActive())
+		{
+			m_CurrentState = GhostState::Frightened;
+			m_Animation.TransitionTo(ANIM_FRIGHTENED);
+			return;
+		}
+
 		constexpr float movementSpeed = 3.5f;
 
 		const glm::vec2& playerPosition = m_Board->GetPlayer().GetPosition();
@@ -219,8 +265,6 @@ namespace Pacman {
 			}
 		}
 
-		
-
 		if (m_CurrentDirection != nextDirection)
 		{
 			SetDirection(nextDirection);
@@ -240,4 +284,6 @@ namespace Pacman {
 			m_Position.y = y;
 		}
 	}
+
+	
 }

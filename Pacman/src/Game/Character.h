@@ -22,12 +22,13 @@ namespace Pacman {
 	class Character
 	{
 	public:
+
 		Character(Board* board) : m_Board(board)
 		{
 			SetDirection(Direction::Left);
 		}
 
-		Character(const AnimationLoop& animation, Board* board) : m_Animation(animation), m_Board(board)
+		Character(Board* board, AnimationLoop animation) : m_Board(board), m_Animation(animation)
 		{
 			SetDirection(Direction::Left);
 		}

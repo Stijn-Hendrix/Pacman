@@ -10,24 +10,19 @@ namespace Pacman {
 	enum class GhostState
 	{
 		Wander = 0,
-		Scatter,
-		Chase
+		Chase,
+		Frightened,
 	};
 
 	class Ghost :  public Character
 	{
 	public:
 
-		Ghost(Board* board) : Character(board), m_CurrentState(GhostState::Wander), rng()
+		Ghost(AnimationLoop& animation, Board* board)
+			: Character(board, animation), m_CurrentState(GhostState::Wander), rng()
 		{
-			SetCanRotate(false);
-			SetRandomDirection();
-		}
+			animation.SetSpeed(4);
 
-		Ghost(const AnimationLoop& animationLoop, Board* board)
-			: Character(animationLoop, board), m_CurrentState(GhostState::Wander), rng()
-		{
-			m_Animation.SetSpeed(4);
 			SetCanRotate(false);
 			SetRandomDirection();
 		}
@@ -37,8 +32,10 @@ namespace Pacman {
 	private:
 
 		void OnWander(float ts);
-		void OnScatter(float ts);
 		void OnChase(float ts);
+
+		void OnFrightened(float ts);
+		void OnScatter(float ts);
 
 		void FindNewDirection();
 		void SetRandomDirection();

@@ -63,7 +63,7 @@ namespace Pacman {
 	{
 		auto& dir = GetFromDirection(direction);
 		glm::vec2 newPosOffset = m_Position + dir * 0.6f;
-		return !m_Board->TileHasFlag(newPosOffset, WALL);
+		return !m_Board->TileHasFlag(newPosOffset, WALL) && ! m_Board->GhostOnTile(newPosOffset);
 	}
 
 	bool Character::CanChangeDirection(Direction direction)

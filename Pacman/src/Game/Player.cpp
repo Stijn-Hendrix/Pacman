@@ -14,7 +14,7 @@ namespace Pacman {
 		auto texture = Texture::Create("assets/textures/pacman.png");
 
 		m_Animation =
-		{ 
+		{
 			SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }),
 			SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }),
 			SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }),
@@ -24,8 +24,9 @@ namespace Pacman {
 			SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }),
 			SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 })
 		};
-		m_Animation.SetSpeed(4);
+
 	}
+
 
 	void Player::OnUpdate(float ts)
 	{
@@ -69,6 +70,12 @@ namespace Pacman {
 			if (m_Board->TileHasFlag(m_Position, COIN))
 			{
 				m_Board->RemoveCoin(m_Position);
+				m_CollectedCoins++;
+			}
+			else if (m_Board->TileHasFlag(m_Position, POWERUP))
+			{
+				m_Board->RemovePowerUp(m_Position);
+				m_Board->ActivatePowerUp(3.0f);
 				m_CollectedCoins++;
 			}
 		}

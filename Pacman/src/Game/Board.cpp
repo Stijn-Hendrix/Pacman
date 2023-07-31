@@ -10,9 +10,10 @@ namespace Pacman {
 	{
 		m_Coin = Texture::Create("assets/textures/coin.png");
 
-		const unsigned char _ = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(TileFlag::COIN);
-		const unsigned char W = static_cast<uint8_t>(TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
-		const unsigned char E = static_cast<uint8_t>(~TileFlag::WALL) | static_cast<uint8_t>(~TileFlag::COIN);
+		const unsigned char _ = static_cast<uint8_t>(TileFlag::COIN);
+		const unsigned char W = static_cast<uint8_t>(TileFlag::WALL);
+		const unsigned char E = 0;
+		const unsigned char P = static_cast<uint8_t>(TileFlag::POWERUP);
 
 		// Inverted along Y-Axis
 		m_Tiles = {
@@ -24,7 +25,7 @@ namespace Pacman {
 			W, W, W, _, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, _, W, W, W,
 			W, W, W, _, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, _, W, W, W,
 			W, _, _, _, W, W, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, W, W, _, _, _, W,
-			W, _, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, _, W,
+			W, P, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, P, W,
 			W, _, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, _, W,
 			W, _, _, _, _, _, _, _, _, _, _, _, _, W, W, _, _, _, _, _, _, _, _, _, _, _, _, W,
 			W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, W, W,
@@ -37,7 +38,7 @@ namespace Pacman {
 			W, W, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, W, W,
 			W, _, _, _, _, _, _, W, W, _, _, _, _, W, W, _, _, _, _, W, W, _, _, _, _, _, _, W,
 			W, _, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, _, W,
-			W, _, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, _, W,
+			W, P, W, W, W, W, _, W, W, _, W, W, W, W, W, W, W, W, _, W, W, _, W, W, W, W, P, W,
 			W, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, W,
 			W, _, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, _, W,
 			W, _, W, W, W, W, _, W, W, W, W, W, _, W, W, _, W, W, W, W, W, _, W, W, W, W, _, W,
@@ -48,21 +49,25 @@ namespace Pacman {
 
 
 		// TEMP, Prepare grid for drawing
-		m_CoinTileSprites.resize(m_Width * m_Height);
 		m_WallTileSprites.reserve(m_Width * m_Height);
 
 		const float halfWidth = m_Width / 2.0f;
 		const float halfHeight = m_Height / 2.0f;
 
+
 		for (uint32_t x = 0; x < m_Width; x++)
 		{
 			for (uint32_t y = 0; y < m_Height; y++)
 			{
-				uint8_t type = m_Tiles[CoordToIndex(x, y)];
+				uint8_t type = GetTile(x, y);
 				if (type & WALL)
 				{
 
-					if (CoordToIndex(x - 1, y) != -1 && m_Tiles[CoordToIndex(x - 1, y)] == _)
+					if (
+						CoordToIndex(x - 1, y) != -1 && 
+						(m_Tiles[CoordToIndex(x - 1, y)] == _ ||
+						m_Tiles[CoordToIndex(x - 1, y)] == P)
+					)
 					{
 						WallSprite tile;
 						tile.Position = { x, y };
@@ -70,7 +75,11 @@ namespace Pacman {
 						m_WallTileSprites.push_back(tile);
 					}
 
-					if (CoordToIndex(x + 1, y) != -1 && m_Tiles[CoordToIndex(x + 1, y)] == _)
+					if (
+						CoordToIndex(x + 1, y) != -1 && 
+						(m_Tiles[CoordToIndex(x + 1, y)] == _ ||
+						m_Tiles[CoordToIndex(x + 1, y)] == P)
+					)
 					{
 						WallSprite tile;
 						tile.Position = { x, y};
@@ -78,7 +87,11 @@ namespace Pacman {
 						m_WallTileSprites.push_back(tile);
 					}
 
-					if (CoordToIndex(x, y - 1) != -1 && m_Tiles[CoordToIndex(x, y - 1)] == _)
+					if (
+						CoordToIndex(x, y - 1) != -1 && 
+						(m_Tiles[CoordToIndex(x, y - 1)] == _ ||
+						m_Tiles[CoordToIndex(x, y - 1)] == P)
+					)
 					{
 						WallSprite tile;
 						tile.Position = { x, y };
@@ -86,39 +99,17 @@ namespace Pacman {
 						m_WallTileSprites.push_back(tile);
 					}
 
-					if (CoordToIndex(x, y + 1) != -1 && m_Tiles[CoordToIndex(x, y + 1)] == _)
+					if (
+						CoordToIndex(x, y + 1) != -1 && 
+						(m_Tiles[CoordToIndex(x, y + 1)] == _ ||
+						m_Tiles[CoordToIndex(x, y + 1)] == P)
+					)
 					{
 						WallSprite tile;
 						tile.Position = { x, y };
 						tile.Size = { 0.5f ,  0.1f };
 						m_WallTileSprites.push_back(tile);
 					}
-				
-					/*
-					if (m_Tiles[CoordToIndex(x, y)] == W)
-					{
-						WallSprite tile;
-						tile.Position = { x, y };
-						tile.Size = { 1.0f, 1.0f };
-						m_WallTileSprites.push_back(tile);
-					}
-					*/
-
-					CoinSprite tile;
-					tile.Occupied = false;
-					tile.Position = { x, y };
-					tile.Size = { 0.8f, 0.8f };
-					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
-				}
-				else if (type & COIN)
-				{
-					CoinSprite tile;
-					tile.Occupied = true;
-					tile.Position = { x, y };
-					tile.Size = { 0.8f, 0.8f };
-					m_CoinTileSprites[CoordToIndex(x, y)] = tile;
-
-					m_RemainingCoins++;
 				}
 			}
 		}
@@ -143,13 +134,14 @@ namespace Pacman {
 			"assets/textures/blueghost.png"
 		};
 
+		auto frightened = Texture::Create("assets/textures/scaredghost.png");
+
 		for (int i = 0; i < 4; i++)
 		{
 			auto texture = Texture::Create(ghostTextures[i]);
 
-			Ghost ghost = {
-				{
-					SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }),
+			AnimationLoop loop = {
+				SubTexture::CreateFromCoords(texture, { 0, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 1, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 2, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 3, 0 }, { 16,16 }),
@@ -157,7 +149,20 @@ namespace Pacman {
 					SubTexture::CreateFromCoords(texture, { 5, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 6, 0 }, { 16,16 }),
 					SubTexture::CreateFromCoords(texture, { 7, 0 }, { 16,16 })
-				},
+			};
+			loop.AddAnimation({
+				SubTexture::CreateFromCoords(frightened, { 0, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 1, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 2, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 3, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 4, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 5, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 6, 0 }, { 16,16 }),
+					SubTexture::CreateFromCoords(frightened, { 7, 0 }, { 16,16 })
+				});
+
+			Ghost ghost = {
+				loop,
 				this
 			};
 
@@ -168,6 +173,11 @@ namespace Pacman {
 
 	void Board::OnUpdate(float ts)
 	{
+		if (IsPowerUpActive())
+		{
+			m_PowerUpActive -= ts;
+		}
+
 		m_Player.OnUpdate(ts);
 
 		for (uint8_t i = 0; i < m_Ghosts.size(); i++)
@@ -183,12 +193,21 @@ namespace Pacman {
 			auto& sprite = m_WallTileSprites[i];
 			Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, { 0.337f, 0.341f, 1.0f, 1.0f });
 		}
-
-		for (int i = 0; i < m_CoinTileSprites.size(); i++)
+		for (uint32_t i = 0; i < m_Width * m_Height; i++)
 		{
-			auto& sprite = m_CoinTileSprites[i];
-			if (sprite.Occupied)
-				Renderer::DrawQuad(glm::vec3(sprite.Position, 0), sprite.Size, m_Coin);
+			int x = i % m_Width;
+			int y = i / m_Height;
+			uint8_t tile = GetTile(x, y);
+
+			if (tile & COIN)
+			{
+				Renderer::DrawQuad({x, y, 0}, { 0.7f, 0.7f }, m_Coin);
+			}
+			else if (tile & POWERUP)
+			{
+				Renderer::DrawQuad({x, y, 0}, { 0.85f, 0.85f }, m_Coin, glm::vec4(1,0,0,1));
+			}
+			
 		}
 
 		m_Player.OnDraw(ts);
@@ -201,14 +220,38 @@ namespace Pacman {
 
 	void Board::RemoveCoin(const glm::vec2& position)
 	{
+		RemoveFlag(position, COIN);
+		m_RemainingCoins--;
+	}
+
+	void Board::RemovePowerUp(const glm::vec2& position)
+	{
+		RemoveFlag(position, POWERUP);
+	}
+
+	void Board::RemoveFlag(const glm::vec2& position, TileFlag flag)
+	{
 		auto& [xx, yy] = PositionToCoord(position);
 		uint32_t index = CoordToIndex(xx, yy);
 
 		TileType tile = m_Tiles[index];
 
-		m_Tiles[index] = m_Tiles[index] & ~COIN;
-		m_CoinTileSprites[index].Occupied = false;
-		m_RemainingCoins--;
+		m_Tiles[index] = m_Tiles[index] & ~flag;
+	}
+
+	bool Board::GhostOnTile(const glm::vec2& position)
+	{
+		auto coord = PositionToCoord(position);
+
+		for (Ghost ghost : m_Ghosts)
+		{
+			auto ghostCoord = PositionToCoord(ghost.GetPosition());
+			if (ghostCoord == coord)
+			{
+				return true;
+			}
+		}
+		return false;
 	}
 
 	bool Board::IsInCenterOfTile(const glm::vec2& position)
@@ -231,6 +274,11 @@ namespace Pacman {
 		int posX = std::floor(position.x + 0.5f);
 		int posY = std::floor(position.y + 0.5f);
 		return { posX, posY };
+	}
+
+	uint8_t Board::GetTile(uint32_t x, uint32_t y)
+	{
+		return m_Tiles[CoordToIndex(x, y)];
 	}
 
 	int32_t Board::CoordToIndex(uint32_t x, uint32_t y)

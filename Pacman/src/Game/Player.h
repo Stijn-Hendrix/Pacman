@@ -26,6 +26,8 @@ namespace Pacman {
 
 	private:
 
+		AnimationLoop m_MoveAnimation;
+
 		uint16_t m_CollectedCoins = 0;
 	};
 
